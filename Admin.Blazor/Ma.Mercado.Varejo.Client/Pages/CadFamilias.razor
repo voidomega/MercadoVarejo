@@ -1,0 +1,515 @@
+﻿@page "/cadfamilias/{IdCategoria}"
+@using Ma.Mercado.Varejo.Models;
+@using Ma.Mercado.Varejo.Client.Classes;
+@using Newtonsoft.Json;
+@inject IHttpClientFactory ClientFactory;
+@inject HttpClient hclient;
+@using System.Net.Http.Headers;
+@using System.Text.Encodings;
+@using Syncfusion.Blazor.Popups;
+@inject NavigationManager NavManager;
+<AuthorizeView>
+    <Authorizing>
+        <center><h4>Autorizando acesso.</h4></center>
+    </Authorizing>
+    <Authorized>
+        @if (operacao == enOperacao.Excluir)
+        {
+
+            <SfDialog @bind-Visible="@ConfirmDlgVisible" Width="400px" Target="#target" ShowCloseIcon="true">
+                <DialogTemplates>
+                    <Header>
+                        <table width="100%" style="background:#0A2464;color:honeydew">
+                            <tr>
+                                <td width="20">&nbsp;</td>
+                                <td>
+                                    <h3>
+                                        Excluir essa Familia
+
+                                    </h3>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2"></td>
+                            </tr>
+                        </table>
+                    </Header>
+                    <Content>
+                        <table class="form-group">
+                            <tr>
+                                <td width="20">&nbsp;</td>
+                                <td>
+                                    <label for="Name" class="control-label">ID</label>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" @bind-value="FamiliaAtual.IdFamilia" readonly />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="20">&nbsp;</td>
+                                <td>
+                                    <label for="Name" class="control-label">Descrição</label>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" @bind-value="FamiliaAtual.DsFamilia" readonly />
+                                </td>
+                            </tr>
+                        </table>
+                    </Content>
+                </DialogTemplates>
+                <DialogEvents OnOpen="@BeforeDialogOpen" Closed="@DialogClose"></DialogEvents>
+                <DialogButtons>
+                    <DialogButton Content="Sim" IsPrimary="true" OnClick="@HideDialogDelete" />
+                    <DialogButton Content="Não" OnClick="@HideDialog" />
+                </DialogButtons>
+            </SfDialog>
+        }
+
+        <MatBlazor.MatCard>
+            <MatBlazor.MatCardContent>
+                <div>
+                    <table width="100%" style="background: #05163D; color: white">
+                        <tr>
+                            <td width="20">&nbsp;</td>
+                            <td>
+                                <h2>Cadastro de Familias  Categoria: @NmCategoria</h2>
+                            </td>
+                            <td>
+                                <MatButton Outlined="true" Style="color:white;" @onclick="VoltarCategoria" Icon="arrow_back">Voltar</MatButton>                                
+                            </td>
+                            <td align="right">
+                                @if (operacao == enOperacao.Browse)
+                                {
+                                    <button class="btn btn-info" @onclick="AddNovoFamilia">Incluir Novo Familia</button>
+                                }
+                            </td>
+                            <td width="10">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"></td>
+                        </tr>
+                    </table>
+                </div>
+            </MatBlazor.MatCardContent>
+        </MatBlazor.MatCard>
+        <hr />
+
+
+        @if (operacao == enOperacao.Detalhe)
+        {
+            <MatBlazor.MatCard>
+                <MatBlazor.MatCardContent>
+
+                    <table width="100%" style="background:#0A2464;color:honeydew">
+                        <tr>
+                            <td width="20">&nbsp;</td>
+                            <td>
+                                <h3>
+                                    Detalhe da Familia
+
+                                </h3>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"></td>
+                        </tr>
+                    </table>
+
+                    <table class="form-group">
+                        <tr>
+                            <td>
+                                <label for="Name" class="control-label">ID</label>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" @bind-value="FamiliaAtual.IdFamilia" readonly />
+                            </td>
+                            <td width="20">&nbsp;</td>
+                            <td>
+                                <label for="Name" class="control-label">Descrição</label>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" @bind-value="FamiliaAtual.DsFamilia" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+
+                                <button type="submit" class="btn btn-success" @onclick="CancelarOperacao" style="width:220px;">
+                                    Voltar
+                                </button>
+                            </td>
+                        </tr>
+                    </table>
+                </MatBlazor.MatCardContent>
+            </MatBlazor.MatCard>
+        }
+
+
+        @if (operacao == enOperacao.Editar || operacao == enOperacao.Inserir)
+        {
+            <MatBlazor.MatCard>
+                <MatBlazor.MatCardContent>
+                    <table width="100%" style="background:#0A2464;color:honeydew">
+                        <tr>
+                            <td width="20">&nbsp;</td>
+                            <td>
+                                <h3>
+                                    @if (operacao == enOperacao.Editar)
+                                    {<span>Editar Familia</span>}
+                                    else
+                                    {
+                                        <span>Inserir Familia</span>}
+                                </h3>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"></td>
+                        </tr>
+                    </table>
+
+                    <div class="mat-elevation-z3">
+                        <form>
+                            <table class="form-group">
+                                <tr>
+                                    <td width="20">
+                                        &nbsp;
+                                        <label for="Name" class="control-label">ID</label>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" @bind-value="FamiliaAtual.IdFamilia" readonly />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="20">
+                                        &nbsp;
+                                        <label for="Name" class="control-label">Descrição</label>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" @bind-value="FamiliaAtual.DsFamilia" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+
+                                        <button type="submit" class="btn btn-success" disabled="@DisableSave" @onclick="PersisteFamilia" style="width:220px;">
+                                            <div>Salvar </div>
+                                            <div>@FamiliaAtual.DsFamilia</div>
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <button type="submit" class="btn btn-danger" @onclick="CancelarOperacao" style="width:220px;">Cancelar</button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </form>
+                    </div>
+                </MatBlazor.MatCardContent>
+            </MatBlazor.MatCard>
+        }
+        @if (operacao == enOperacao.Browse)
+        {
+            <MatBlazor.MatCard>
+                <MatBlazor.MatCardContent>
+
+                    <table width="100%" style="background:#0A2464;color:honeydew">
+                        <tr>
+                            <td width="20">&nbsp;</td>
+                            <td>
+                                <h3>Familias</h3>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"></td>
+                        </tr>
+                    </table>
+
+                    @if (ListFamiliaGrp.Count == 0)
+                    {
+                        <center>
+                            <MatBlazor.MatProgressBar Indeterminate="@EnableProgressBar"></MatBlazor.MatProgressBar>
+                            <p><em>@MsgLoad</em></p>
+                        </center>
+
+                    }
+                    else
+                    {
+                        <div class="row">
+                            <SfGrid width="100%" DataSource="@ListFamiliaGrp">
+                                <GridEvents CommandClicked="OnCommandClicked" TValue="Familias"></GridEvents>
+                                <GridColumns>
+                                    <GridColumn Field=@nameof(Familias.IdFamilia) HeaderText="ID" TextAlign="TextAlign.Right" Width="120">
+                                    </GridColumn>
+                                    <GridColumn Field=@nameof(Familias.DsFamilia) HeaderText="Descrição" AutoFit="true" Width="150">
+                                    </GridColumn>
+                                    <GridColumn HeaderText="-" Width="150">
+                                        <GridCommandColumns>
+                                            <GridCommandColumn Type="CommandButtonType.Edit" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-edit", CssClass = "e-flat" })"></GridCommandColumn>
+                                            <GridCommandColumn Type="CommandButtonType.Delete" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-delete", CssClass = "e-flat" })"></GridCommandColumn>
+                                        </GridCommandColumns>
+                                    </GridColumn>
+                                </GridColumns>
+                            </SfGrid>
+                        </div>
+                    }
+
+                </MatBlazor.MatCardContent>
+            </MatBlazor.MatCard>
+
+
+        }
+
+
+        @code{
+
+            [Parameter]
+            public string IdCategoria { get; set; }
+
+            private string MsgLoad { get; set; } = "Carregando...";
+
+            private bool EnableProgressBar { get; set; } = true;
+
+            private bool DisableSave { get; set; } = false;
+            private bool ShowButtons { get; set; } = true;
+            private bool ConfirmDlgVisible { get; set; } = false;
+
+            private string NmCategoria { get; set; }
+
+
+            List<Familias> ListFamiliaGrp = new List<Familias>();
+
+
+            Familias FamiliaAtual = null;
+
+            //  <DropDownListFieldSettings Value="DsGrupo"></DropDownListFieldSettings>
+
+
+            enOperacao operacao;
+
+
+            private void  VoltarCategoria()
+            {
+                NavManager.NavigateTo($"cadcategorias/");
+            }
+
+
+            protected override async Task OnInitializedAsync()
+            {
+
+
+
+                operacao = enOperacao.Browse;
+                var client = ClientFactory.CreateClient("api");
+                // client.SetBearerToken(Program.GlobalToken.AccessToken);
+                //hclient = InitClient();
+                ListFamiliaGrp = await client.GetJsonAsync<List<Familias>>($"Familias/GetFamiliasByIdCategoria?id={IdCategoria}");
+                FamiliaAtual = new Familias();
+
+                Console.WriteLine("Familia Start.");
+
+                Categorias categoria = await client.GetJsonAsync<Categorias>($"Categorias/GetCategoriasById?id={IdCategoria}");
+
+                if (categoria != null)
+                {
+                    NmCategoria = categoria.DsCategoria;
+
+                }
+                else
+                {
+                    NmCategoria = "";
+                }
+
+                if (ListFamiliaGrp.Count() == 0)
+                {
+                    MsgLoad = "Sem dados para exibir.";
+                    EnableProgressBar = false;
+                }
+
+                Console.WriteLine("Familia End.");
+
+            }
+
+
+            void CancelarOperacao()
+            {
+                operacao = enOperacao.Browse;
+                FamiliaAtual = new Familias();
+            }
+
+            public void OnCommandClicked(CommandClickEventArgs<Familias> args)
+            {
+
+                FamiliaAtual = args.RowData;
+                if (args.CommandColumn.Type == CommandButtonType.Edit)
+                {
+                    FamiliaAtual = args.RowData;
+                    operacao = enOperacao.Editar;
+                }
+                else if (args.CommandColumn.Type == CommandButtonType.Delete)
+                {
+                    operacao = enOperacao.Excluir;
+                    ConfirmDlgVisible = true;
+                }
+            }
+
+
+            protected async Task AddNovoFamilia()
+            {
+                FamiliaAtual = new Familias();
+                var client = ClientFactory.CreateClient("api");
+
+                operacao = enOperacao.Inserir;
+            }
+
+            // Adicionar detalhes
+            protected async Task PersisteFamilia()
+            {
+
+                DisableSave = true;
+                var client = ClientFactory.CreateClient("api");
+                //GrupoAtual = new Grupos();
+
+                FamiliaAtual.IdCategoria = Convert.ToInt32(IdCategoria);
+
+                //Console.Clear();
+
+                bool Sucess = false;
+                Console.WriteLine($"FamiliaAtual.IdGrupo: {FamiliaAtual.IdFamilia}");
+                if (FamiliaAtual.IdFamilia == 0)
+                {
+
+
+                    Console.WriteLine($"FamiliaAtual: post {FamiliaAtual.DsFamilia}");
+
+                    var byteContent = PostContent.PrepareData(FamiliaAtual);
+
+                    var rst = await client.PostAsync("Familias/PostFamilias/", byteContent);
+
+                    if (rst.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        var apiResponse = rst.Content.ReadAsStringAsync();
+                        FamiliaAtual = JsonConvert.DeserializeObject<Familias>(apiResponse.Result);
+                        Sucess = true;
+                    }
+                    else
+                    {
+                        var error = rst.Content.ReadAsStringAsync();
+
+                        Console.WriteLine("Error:" + error.Result);
+                    }
+                }
+                else
+                {
+
+                    var byteContent = PostContent.PrepareData(FamiliaAtual);
+
+                    var rst = await client.PutAsync("Familias/PutFamilias/", byteContent);
+                    Console.WriteLine($"FamiliaAtual: put");
+                    if (rst.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        var apiResponse = rst.Content.ReadAsStringAsync();
+                        FamiliaAtual = JsonConvert.DeserializeObject<Familias>(apiResponse.Result);
+                        Sucess = true;
+                    }
+                    else
+                    {
+                        var error = rst.Content.ReadAsStringAsync();
+
+                        Console.WriteLine("Error:" + error.Result);
+                    }
+                }
+
+
+
+                if (Sucess)
+                {
+                    if (operacao == enOperacao.Inserir && ListFamiliaGrp.Where(x => x.IdFamilia == FamiliaAtual.IdFamilia).Count() == 0)
+                    {
+                        ListFamiliaGrp.Add(FamiliaAtual);
+                    }
+                    else
+                    {
+                        foreach (var item in ListFamiliaGrp)
+                        {
+                            if (item.IdFamilia == FamiliaAtual.IdFamilia)
+                            {
+                                item.DsFamilia = FamiliaAtual.DsFamilia;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+
+                operacao = enOperacao.Detalhe;
+                DisableSave = false;
+                //GrupoAtual = await client.GetJsonAsync<Grupos>($"/api/GetGruposById/id={}");
+            }
+
+
+            private void BeforeDialogOpen(Syncfusion.Blazor.Popups.BeforeOpenEventArgs args)
+            {
+
+                this.ShowButtons = false;
+
+            }
+            private void DialogClose(CloseEventArgs args)
+            {
+                this.ShowButtons = true;
+                operacao = enOperacao.Browse;
+            }
+
+            private void HideDialog(Object e)
+            {
+
+                this.ConfirmDlgVisible = false;
+                operacao = enOperacao.Browse;
+            }
+
+            private void HideDialogDelete(Object e)
+            {
+
+                try
+                {
+                    var client = ClientFactory.CreateClient("api");
+                    //var deleterst = await
+
+                    var tdelete = client.DeleteAsync($"Familias/DeleteFamilias?id={FamiliaAtual.IdFamilia}");
+
+                    tdelete.Wait();
+
+                    if (tdelete.Result.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        var rmvItem = ListFamiliaGrp.Where(x => x.IdFamilia == FamiliaAtual.IdFamilia).FirstOrDefault();
+                        if (rmvItem != null)
+                            ListFamiliaGrp.Remove(rmvItem);
+                    }
+                }
+                catch (Exception exa)
+                {
+                    Console.WriteLine(">>>>>>>>>>>>>>>>>>>>>>>>> error: " + exa.Message);
+
+                }
+
+
+                //if (DeleteService.Execute("Familias", $"id={FamiliaAtual.IdFamilia}", ClientFactory))
+                //{
+                this.ConfirmDlgVisible = false;
+
+                operacao = enOperacao.Browse;
+
+
+                //}
+                //var client = ClientFactory.CreateClient("api");
+                //var rst = client.DeleteAsync($"Familias/DeleteFamilias?id={FamiliaAtual.IdFamilia}");
+
+            }
+
+
+        }
+
+    </Authorized>
+    <NotAuthorized>
+        <h1>Sem permissão para acessar esse recurso</h1>
+    </NotAuthorized>
+</AuthorizeView>

@@ -1,0 +1,408 @@
+﻿<#@ template debug="false" hostspecific="True" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="System" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.IO" #>
+<#@ output extension=".cs" #>
+<#
+  DirectoryInfo d1 = new DirectoryInfo(Path.GetDirectoryName(Host.TemplateFile));
+
+  string path =  d1.Parent.FullName;
+   
+  //var f = d1.GetFiles("*.csproj");
+    string baseNameSpace = "MercadoAssistente.Api" ;//Path.GetFileNameWithoutExtension(f[0].Name);
+    
+     string serviceDestinationFolder = "Services";
+
+   
+     string serviceclassNamespace = baseNameSpace + "." + serviceDestinationFolder;
+
+      
+     string  pathDestino = System.IO.Path.Combine(path,serviceDestinationFolder);
+
+    if(!System.IO.Directory.Exists(pathDestino))
+    {
+        System.IO.Directory.CreateDirectory(pathDestino);
+    }
+
+
+     DirectoryInfo d = new DirectoryInfo(path +  "\\Entities");
+     FileInfo[] Files = d.GetFiles("*.cs");  
+
+    List<string> lstEnumFile = new List<string>();
+    lstEnumFile.AddRange(System.IO.File.ReadAllLines(path +  "\\listaenum.txt"));
+
+    List<string> lstCadFile = new List<string>();
+    lstCadFile.AddRange(System.IO.File.ReadAllLines(path +  "\\listaCadastro.txt"));
+
+
+    List<string> lstChaves = new List<string>();
+    lstChaves.AddRange(System.IO.File.ReadAllLines(path +  "\\lista.chaves.Au.txt"));
+
+
+    
+
+#>
+
+
+<#
+    this.GenerationEnvironment.Remove(0, this.GenerationEnvironment.Length);
+    string entityName = string.Empty; 
+    string entityNameLC = string.Empty;
+
+    string deleteCommand = string.Empty;
+
+    string putCommand = string.Empty;
+
+    bool ehEnum = false;
+    bool ehCada = false;
+
+ 
+
+foreach (var file in Files)
+{
+     
+    deleteCommand = string.Empty;
+    putCommand = string.Empty;
+    entityName = System.IO.Path.GetFileNameWithoutExtension(file.Name);
+    entityNameLC = entityName.ToLower();
+
+        string alltxt  =  System.IO.File.ReadAllText(file.FullName);
+
+        var espeDelete = alltxt.Contains("DtDesativacao");
+
+        var espePut = alltxt.Contains("IdUsuarioUltimaEdicao");
+
+
+        string datKey = lstChaves.Find(x=>x.StartsWith(entityName));
+
+       
+
+
+        var lstFields = GetParamFields(lstCadFile,entityName);
+
+        
+        var lstLinqFields = GetLinqFields(lstCadFile,entityName);
+
+
+        var espeParamGet = lstLinqFields.Count()>0; // .Contains("IdEmpresa");
+        
+
+        var GetAllCommand = "service.Get().ToList();";
+
+        var GetAllParam = string.Empty;
+        
+        if(espeParamGet){
+            GetAllCommand = "service.SelectIEnumerable(x => " + lstLinqFields + ").ToList();";
+            GetAllParam = lstFields;
+        }
+
+
+        var txtEmpresp = string.Empty;
+
+        var existEmpResp = lstLinqFields.Contains("IdFilial");
+        
+        var existEmpresa = lstLinqFields.Contains("IdEmpresa") ;//&& !lstLinqFields.Contains("IdEmpresaResponsavel");
+
+
+        var txtEmpresa = string.Empty;
+
+        if (existEmpresa) txtEmpresa = "public int IdEmpresa {get; set;}";
+         
+       // if (existEmpResp) txtEmpresp = "public int IdFilial {get; set;}";
+
+
+
+
+
+
+
+        ehEnum = lstEnumFile.IndexOf(entityName)>=0;
+
+        
+      
+
+
+        if(espePut)
+        {
+
+            
+            System.Text.StringBuilder stringBuilder = new System.Text.StringBuilder();
+
+          
+           
+
+            stringBuilder.AppendLine("if(IdUsrUltEdicao>0){");
+            stringBuilder.AppendLine("                  " + entityNameLC+ ".IdUsuarioUltimaEdicao = IdUsrUltEdicao;");
+            stringBuilder.AppendLine("                  " + entityNameLC+ ".DtUltimaEdicao = DateTime.Now;}");
+
+          
+                
+            putCommand = stringBuilder.ToString();
+        }
+
+
+
+        if(espeDelete)
+        {
+            
+            System.Text.StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine("     var ExisteRecord = service.SelectIEnumerable(x => x.Id" + entityName + " == Id).FirstOrDefault();"); 
+            sb.AppendLine("             if(ExisteRecord!=null) { ExisteRecord.DtDesativacao = DateTime.Now;");
+            if(espePut){
+                sb.AppendLine("                 ExisteRecord.IdUsuarioUltimaEdicao = IdUsrUltEdicao; ");
+                sb.AppendLine("                 ExisteRecord.DtUltimaEdicao = DateTime.Now;      ");  
+            }
+
+            sb.AppendLine("                 return Put(ExisteRecord) !=null; ");            
+            sb.AppendLine("             } ");            
+            sb.AppendLine("             else{");
+            sb.AppendLine("                     return service.DeleteReturn(Id);");
+            sb.AppendLine("             }");
+
+            deleteCommand = sb.ToString();
+
+               
+        }else{
+
+            deleteCommand =  "return service.DeleteReturn(Id);";
+        }
+   
+          //<=lstFields>  
+
+        string tpDataGetById =  datKey.Split(";".ToCharArray())[2];
+
+#>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using MercadoAssistente.Services;
+
+using MercadoAssistente.Data.Layer.Context;
+using Mercado.Assistente.Domain.Entities;
+using Ma.Interfaces;
+using Ma.Domain.Entities;
+
+<#        if(!ehEnum){#>
+using MercadoAssistente.Validators;
+<#        }#>
+
+using System.Linq.Expressions;
+
+namespace <#=serviceclassNamespace#>
+{
+    public class <#=entityName#>Service
+    {
+        private BaseService<<#=entityName#>> service;
+
+
+
+        public <#=entityName#>Service(DefaultContext Context)
+        {
+             service = new BaseService<<#=entityName#>>(Context);
+        }
+
+        public Int32 IdUsrUltEdicao {get; set;}
+
+        <#=txtEmpresa#>
+        
+        <#=txtEmpresp#>
+
+        
+ 
+        /// <summary>
+        /// Construtor da Classe
+        /// </summary>
+        public <#=entityName#>Service()
+        {
+            service.NoTracking = false;
+           
+        }
+
+        /// <summary>
+        /// Ativa ou desativa o Tracking das entidades carregadas.
+        /// </summary>
+        /// <param name="TrackOnOff">Boolean</param>
+        public void SetNoTracking(Boolean TrackOnOff)
+        {
+            service.NoTracking = TrackOnOff;
+        }
+
+<# if(!ehEnum){#>
+        /// <summary>
+        /// insere uma entidade da classe <#=                entityName#>
+        /// </summary>
+        /// <param name="<#=                entityNameLC#>"></param>
+        /// <returns></returns>
+        public <#=                entityName#> Post(<#=                entityName#> <#=                entityNameLC#>)
+        {
+            <#=                putCommand#>
+            return service.PostReturn<<#=                entityName#>Validator>(<#=                entityNameLC#>);
+        }
+
+        /// <summary>
+        /// Edita uma entidade da classe <#=                entityName#>
+        /// </summary>
+        /// <param name="<#=                entityNameLC#>"></param>
+        /// <returns></returns>
+        public <#=                entityName#> Put(<#=                entityName#> <#=                entityNameLC#>)
+        {
+                <#=                putCommand#>
+                return service.PutReturn<<#=                entityName#>Validator>(<#=                entityNameLC#>);
+        }
+
+        /// <summary>
+        /// Exclui uma entidade da classe <#=                entityName#>
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>        
+        public Boolean Delete(<#=tpDataGetById#> Id)
+        {       
+            <#=                deleteCommand#>
+        }
+
+<# }#>
+        /// <summary>
+        /// Faz um select "All" na tabela da classe <#=entityName#>
+        /// </summary>
+        /// <returns></returns>
+        public List<<#=entityName#>> GetAll<#=entityName#>s(<#=existEmpResp ? "Int32 IdFilial" : "" #>)
+        {
+            return <#=GetAllCommand#>
+        }
+
+        /// <summary>
+        /// Retorna um único registro da classe <#=entityName#> a partir da PK
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public <#=entityName#> Get<#=entityName#>ById(<#=tpDataGetById#>  Id)
+        {
+            return service.Get(Id);
+        }
+
+        /// <summary>
+        /// Permite realizar uma consulta usando Linq na tabela <#=entityName#>
+        /// </summary>
+        /// <param name="predicate">um predicado Lambda para montar uma consulta parametrizada</param>
+        /// <returns></returns>
+        public IEnumerable<<#=entityName#>> SelectIEnumerable(Expression<Func<<#=entityName#>, bool>> predicate)
+        {
+            return service.SelectIEnumerable(predicate);
+        }
+
+    }
+}
+<#
+
+SaveFile(pathDestino,entityName + "Service.cs", this.GenerationEnvironment.ToString());
+this.GenerationEnvironment.Remove(0, this.GenerationEnvironment.Length);
+} 
+
+#>
+
+
+<#+ void SaveFile(string folder, string fileName, string content)
+{
+    if(System.IO.File.Exists(System.IO.Path.Combine(folder,fileName)))
+              System.IO.File.Delete(System.IO.Path.Combine(folder,fileName));
+
+    using (FileStream fs = new FileStream(Path.Combine(folder, fileName), FileMode.Create))
+    {  
+        using (StreamWriter str = new StreamWriter(fs))
+        {
+        str.WriteLine(content);
+        str.Flush();
+        }
+    }
+}
+
+#>
+
+<#+ string GetParamFields(List<string> lstCadFile,string EntityName)
+    {
+        try{
+           
+        string  strEntityDataA = lstCadFile.Find(x => x.StartsWith(EntityName + "="));
+
+        if(strEntityDataA==null) return string.Empty;
+
+        var strEntityData = strEntityDataA.Split("=".ToCharArray(),StringSplitOptions.RemoveEmptyEntries);
+
+        if(strEntityData !=null && strEntityData.Length >0){
+            var lstFields = strEntityData[1].Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+        
+            List<string> paramFields = new List<string>();
+            if (lstFields!=null && (lstFields.Count() > 0 && lstFields[0] != "_NT_"))
+            {
+                foreach (var item in lstFields)
+                {
+                    if(!item.Contains("IdEmpresa") )
+                        paramFields.Add(item);
+                }
+            }
+
+               string fieldsStr = string.Empty;
+               if (paramFields.ToArray()!=null)
+                    fieldsStr = string.Join(", ", paramFields.ToArray());
+
+                return fieldsStr;
+            
+
+        } else  return string.Empty;
+
+        }catch(Exception errGetParam)
+        {
+           Console.Write("erro errGetParam: " + errGetParam.Message);
+            return string.Empty;
+        }
+
+    }
+#>
+
+<#+string GetLinqFields(List<string> lstCadFile, string EntityName)
+    {
+        try{
+
+        var strEntityDataA = lstCadFile.Find(x => x.StartsWith(EntityName + "="));
+
+         if(strEntityDataA==null) return string.Empty;
+
+        var strEntityData = strEntityDataA.Split("=".ToCharArray(),StringSplitOptions.RemoveEmptyEntries);
+
+        if(strEntityData !=null && strEntityData.Length >0){
+            var lstFields = strEntityData[1].Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+
+            List<string> paramFields = new List<string>();
+            if (lstFields!=null && (lstFields.Count() > 0 && lstFields[0] != "_NT_"))
+                {
+                    foreach (var item in lstFields)
+                    {
+                        string strField = item.Replace("int ", string.Empty).Replace("long ", string.Empty);
+
+                        paramFields.Add("x." + strField + (!strField.StartsWith("IdEmpresa") ? " == " : " == this." )+ strField);
+                    }
+                }
+
+
+                string fieldsStr = string.Empty;
+                if (paramFields.ToArray()!=null)
+                    fieldsStr = string.Join(" && ", paramFields.ToArray());
+
+                return fieldsStr;
+
+            }else return string.Empty;
+
+        }catch(Exception errLinq)
+        {
+            Console.Write("erro linq: " + errLinq.Message);
+            return string.Empty;
+        }
+
+
+    }
+#>

@@ -1,0 +1,106 @@
+﻿<#@ template debug="false" hostspecific="True" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="System" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.IO" #>
+<#@ output extension=".cs" #>
+<#
+
+
+  DirectoryInfo d1 = new DirectoryInfo(Path.GetDirectoryName(Host.TemplateFile));
+
+  string path =  d1.Parent.FullName;
+   
+  //var f = d1.GetFiles("*.csproj");
+    string baseNameSpace = "MercadoAssistente." ;//Path.GetFileNameWithoutExtension(f[0].Name);
+    
+     string serviceDestinationFolder = "Validators";
+
+   
+     string serviceclassNamespace = baseNameSpace + "." + serviceDestinationFolder;
+
+      
+     string  pathDestino = System.IO.Path.Combine(path,serviceDestinationFolder);
+
+    if(!System.IO.Directory.Exists(pathDestino))
+    {
+        System.IO.Directory.CreateDirectory(pathDestino);
+    }
+
+
+     DirectoryInfo d = new DirectoryInfo(path +  "\\Entities");
+     FileInfo[] Files = d.GetFiles("*.cs");  
+#>
+
+
+<#
+    this.GenerationEnvironment.Remove(0, this.GenerationEnvironment.Length);
+    string entityName = string.Empty; 
+    string entityNameLC = string.Empty;
+
+ 
+    List<string> lstEnumFile = new List<string>();
+    lstEnumFile.AddRange(System.IO.File.ReadAllLines(path +  "\\listaenum.txt"));
+
+foreach (var file in Files)
+    {
+        entityName = System.IO.Path.GetFileNameWithoutExtension(file.Name);
+        entityNameLC = entityName.ToLower();
+
+        if(lstEnumFile.IndexOf(entityName)==-1){
+#>
+using FluentValidation;
+using Sa2s.Domain.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Sa2s.Audit.Domain.Entities;
+
+namespace <#=                serviceclassNamespace#>
+{
+    public class <#=                entityName#>Validator : AbstractValidator<<#=                entityName#>>
+    {
+        public <#=                entityName#>Validator()
+        {
+            RuleFor(c => c)
+            .NotNull()
+            .OnAnyFailure(x =>
+            {
+                throw new ArgumentNullException("Objeto não fornecido.");
+            });
+
+        }    
+
+    }
+}
+<#
+        } 
+
+        if(this.GenerationEnvironment.ToString().Trim()!=""){
+            SaveFile(pathDestino,entityName + "Validator.cs", this.GenerationEnvironment.ToString());
+            this.GenerationEnvironment.Remove(0, this.GenerationEnvironment.Length);
+        }
+    
+} 
+
+#>
+
+
+<#+ void SaveFile(string folder, string fileName, string content)
+{
+    if(System.IO.File.Exists(System.IO.Path.Combine(folder,fileName)))
+              System.IO.File.Delete(System.IO.Path.Combine(folder,fileName));
+
+    using (FileStream fs = new FileStream(Path.Combine(folder, fileName), FileMode.Create))
+    {  
+        using (StreamWriter str = new StreamWriter(fs))
+        {
+        str.WriteLine(content);
+        str.Flush();
+        }
+    }
+}
+#>

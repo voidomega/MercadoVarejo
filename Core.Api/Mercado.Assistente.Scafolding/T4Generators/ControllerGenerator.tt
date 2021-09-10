@@ -1,0 +1,359 @@
+<#@ template debug="false" hostspecific="True" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="System" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.IO" #>
+<#@ output extension=".cs" #>
+<#
+  DirectoryInfo d1 = new DirectoryInfo(Path.GetDirectoryName(Host.TemplateFile));
+
+     string path =  d1.Parent.FullName;
+   
+     //var f = d1.GetFiles("*.csproj");
+     string baseNameSpace = "Ma.MercadoAssistente" ;//Path.GetFileNameWithoutExtension(f[0].Name);
+    
+     string controllerDestinationFolder = "Controllers";
+
+   
+     string controllerclassNamespace = baseNameSpace + "." + controllerDestinationFolder;
+
+      
+     string  pathDestino = System.IO.Path.Combine(path,controllerDestinationFolder);
+
+    if(!System.IO.Directory.Exists(pathDestino))
+    {
+        System.IO.Directory.CreateDirectory(pathDestino);
+    }
+
+
+     DirectoryInfo d = new DirectoryInfo(path +  "\\Entities");
+     FileInfo[] Files = d.GetFiles("*.cs");  
+
+    List<string> lstEnumFile = new List<string>();
+    lstEnumFile.AddRange(System.IO.File.ReadAllLines(path +  "\\listaenum.txt"));
+
+    List<string> lstCadFile = new List<string>();
+    lstCadFile.AddRange(System.IO.File.ReadAllLines(path +  "\\listaCadastro.txt"));
+
+    List<string> lstChaves = new List<string>();
+    lstChaves.AddRange(System.IO.File.ReadAllLines(path +  "\\lista.chaves.Au.txt"));
+
+
+#>
+
+
+<#
+    this.GenerationEnvironment.Remove(0, this.GenerationEnvironment.Length);
+    string entityName = string.Empty; 
+    string entityNameLC = string.Empty;
+    bool ehEnum= false;
+
+foreach (var file in Files)
+{
+    entityName = System.IO.Path.GetFileNameWithoutExtension(file.Name);
+    entityNameLC = entityName.ToLower();
+
+    string alteraConf = string.Empty;
+
+    System.Text.StringBuilder sbAddIdUsrAlt = new System.Text.StringBuilder();
+
+        ehEnum = false;// lstEnumFile.IndexOf(entityName)>=0;
+
+
+    var lstFields = GetParamFields(lstCadFile,entityName);
+
+        
+    var lstLinqFields = GetLinqFields(lstCadFile,entityName);
+
+
+    string datKey = lstChaves.Find(x=>x.StartsWith(entityName));
+
+
+        var espeParamGet = lstLinqFields.Count()>0; 
+
+        var GetAllParam = string.Empty;
+        
+        if(espeParamGet){            
+            GetAllParam = lstFields;
+        }
+
+
+        var txtEmpresp = string.Empty;
+
+       var existFilial = lstLinqFields.Contains("IdFilial");
+        
+        var existEmpresa = lstLinqFields.Contains("IdEmpresa");
+/// && !lstLinqFields.Contains("IdEmpresaResponsavelCadastro");  IdFilial
+
+
+        var txtEmpresa = string.Empty;
+
+        if (existEmpresa) txtEmpresa = "public int IdEmpresa {get; set;}";
+         
+        //if (existEmpResp) txtEmpresp = "public int IdEmpresaResponsavelCadastro {get; set;}";
+
+
+
+        if(existEmpresa)
+        {
+            sbAddIdUsrAlt.AppendLine("StringValues vIdEmpresa;");                    
+            sbAddIdUsrAlt.AppendLine("                httpContextAccessor.HttpContext.Request.Headers.TryGetValue(\"IdEmpresa\", out vIdEmpresa);");
+            sbAddIdUsrAlt.AppendLine("                var sIdEmpresa = vIdEmpresa.FirstOrDefault();");
+            sbAddIdUsrAlt.AppendLine("                if (!string.IsNullOrEmpty(sIdEmpresa)){"); 
+            sbAddIdUsrAlt.AppendLine("                                  service" + entityName + ".IdEmpresa = Convert.ToInt32(sIdEmpresa);");
+            sbAddIdUsrAlt.AppendLine("                              }else{ service" + entityName + ".IdEmpresa = 0;}");            
+        }
+
+        sbAddIdUsrAlt.AppendLine("");
+      
+
+
+        sbAddIdUsrAlt.AppendLine("StringValues vIdUsrUltEdicao;");      
+        sbAddIdUsrAlt.AppendLine("                httpContextAccessor.HttpContext.Request.Headers.TryGetValue(\"IdUsrUltEdicao\", out vIdUsrUltEdicao);");
+        sbAddIdUsrAlt.AppendLine("                var sIdUsrUltEdicao = vIdUsrUltEdicao.FirstOrDefault();");
+        sbAddIdUsrAlt.AppendLine("                if (!string.IsNullOrEmpty(sIdUsrUltEdicao)){");        
+        sbAddIdUsrAlt.AppendLine("                                  service" + entityName + ".IdUsrUltEdicao = Convert.ToInt32(sIdUsrUltEdicao);");
+        sbAddIdUsrAlt.AppendLine("                              }else{ service" + entityName + ".IdUsrUltEdicao = 0;}");
+            
+////<=GetAllParam><=GetAllParam.Replace("int ","").Replace("long ","") >
+
+    alteraConf = sbAddIdUsrAlt.ToString();
+    string tpDataGetById =  datKey.Split(";".ToCharArray())[2];
+
+#>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using MercadoAssistente.Data.Layer.Context;
+using Mercado.Assistente.Domain.Entities;
+using Ma.Domain.Entities;
+
+
+using MercadoAssistente.Api.Services;
+using Microsoft.Extensions.Primitives;
+
+namespace <#=controllerclassNamespace#>
+{
+    [Produces("application/json")]
+    [Route("api/[controller]/[action]")]
+    [ApiController]
+    public class <#=entityName#>Controller : ControllerBase
+    {
+        private <#=entityName#>Service service<#=entityName#>;
+
+
+        
+
+
+        public <#=entityName#>Controller(IHttpContextAccessor httpContextAccessor,DefaultContext Context)
+        {
+               
+
+                service<#=entityName#> = new <#=entityName#>Service(Context);
+ 
+                <#        if(!ehEnum){Write(alteraConf);}#>            
+        }
+
+        [HttpGet(Name ="Get<#=entityName#>s")]        
+        public IActionResult Get<#=entityName#>s(<#=existFilial ? "Int32 IdFilial" : "" #>)
+        {
+            try
+            {
+                return new ObjectResult(service<#=entityName#>.GetAll<#=entityName#>s(<#=existFilial ? "IdFilial" : "" #>));
+            }
+            catch (ArgumentNullException ex)
+            {
+                return NotFound(ex);
+            }
+            catch (Exception ex)
+            {
+                 return BadRequest(Ma.Util.Api.NpgSqlErrorTrapper.GetError(ex));
+            }           
+        }
+
+        [HttpGet(Name ="Get<#=entityName#>ById")]        
+        public IActionResult Get<#=entityName#>ById(<#=tpDataGetById#> id)
+        {
+            try
+            {
+                return new ObjectResult(service<#=entityName#>.Get<#=entityName#>ById(id));
+            }
+            catch (ArgumentNullException ex)
+            {
+                return NotFound(ex);
+            }
+            catch (Exception ex)
+            {
+                  return BadRequest(Ma.Util.Api.NpgSqlErrorTrapper.GetError(ex));
+            }           
+        }
+
+<#        if(!ehEnum){#>
+
+        [HttpPost(Name="Post<#=entityName#>")]
+        public IActionResult Post([FromBody] <#=entityName#> <#=entityNameLC#>)
+        {                   
+            try
+            {  
+                return new ObjectResult(service<#=entityName#>.Post(<#=entityNameLC#>));
+            }
+            catch (ArgumentNullException ex)
+            {
+                return NotFound(ex);
+            }
+            catch (Exception ex)
+            {
+                  return BadRequest(Ma.Util.Api.NpgSqlErrorTrapper.GetError(ex));
+            }     
+        }
+
+        [HttpPut(Name="Put<#=entityName#>")]
+        public IActionResult Put([FromBody] <#=entityName#> <#=entityNameLC#>)
+        {      
+            try
+            {  
+                return new ObjectResult(service<#=entityName#>.Put(<#=entityNameLC#>));
+            }
+            catch (ArgumentNullException ex)
+            {
+                return NotFound(ex);
+            }
+            catch (Exception ex)
+            {
+                  return BadRequest(Ma.Util.Api.NpgSqlErrorTrapper.GetError(ex));
+            }     
+        }
+        
+        [HttpDelete(Name="Delete<#=entityName#>")]
+        public IActionResult Delete(<#=tpDataGetById#> id)
+        {
+            try
+            {
+                return new ObjectResult(service<#=entityName#>.Delete(id));
+            }
+            catch (ArgumentNullException ex)
+            {
+                return NotFound(ex);
+            }
+            catch (Exception ex)
+            {
+                  return BadRequest(Ma.Util.Api.NpgSqlErrorTrapper.GetError(ex));
+            }      
+        }
+<#        }#>
+    }
+}
+<#
+
+SaveFile(pathDestino,entityName + "Controller.cs", this.GenerationEnvironment.ToString());
+this.GenerationEnvironment.Remove(0, this.GenerationEnvironment.Length);
+} 
+
+#>
+
+
+<#+ void SaveFile(string folder, string fileName, string content)
+{
+    if(System.IO.File.Exists(System.IO.Path.Combine(folder,fileName)))
+              System.IO.File.Delete(System.IO.Path.Combine(folder,fileName));
+
+    using (FileStream fs = new FileStream(Path.Combine(folder, fileName), FileMode.Create))
+    {  
+        using (StreamWriter str = new StreamWriter(fs))
+        {
+        str.WriteLine(content);
+        str.Flush();
+        }
+    }
+}
+#>
+
+
+<#+ string GetParamFields(List<string> lstCadFile,string EntityName)
+    {
+        try{
+           
+        string  strEntityDataA = lstCadFile.Find(x => x.StartsWith(EntityName + "="));
+
+        if(strEntityDataA==null) return string.Empty;
+
+        var strEntityData = strEntityDataA.Split("=".ToCharArray(),StringSplitOptions.RemoveEmptyEntries);
+
+        if(strEntityData !=null && strEntityData.Length >0){
+            var lstFields = strEntityData[1].Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+        
+            List<string> paramFields = new List<string>();
+            if (lstFields!=null && (lstFields.Count() > 0 && lstFields[0] != "_NT_"))
+            {
+                foreach (var item in lstFields)
+                {
+                    if(!item.Contains("IdEmpresa") )
+                        paramFields.Add(item);
+                }
+            }
+
+               string fieldsStr = string.Empty;
+               if (paramFields.ToArray()!=null)
+                    fieldsStr = string.Join(", ", paramFields.ToArray());
+
+                return fieldsStr;
+            
+
+        } else  return string.Empty;
+
+        }catch(Exception errGetParam)
+        {
+           Console.Write("erro errGetParam: " + errGetParam.Message);
+            return string.Empty;
+        }
+
+    }
+#>
+
+<#+string GetLinqFields(List<string> lstCadFile, string EntityName)
+    {
+        try{
+
+        var strEntityDataA = lstCadFile.Find(x => x.StartsWith(EntityName + "="));
+
+         if(strEntityDataA==null) return string.Empty;
+
+        var strEntityData = strEntityDataA.Split("=".ToCharArray(),StringSplitOptions.RemoveEmptyEntries);
+
+        if(strEntityData !=null && strEntityData.Length >0){
+            var lstFields = strEntityData[1].Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+
+            List<string> paramFields = new List<string>();
+            if (lstFields!=null && (lstFields.Count() > 0 && lstFields[0] != "_NT_"))
+                {
+                    foreach (var item in lstFields)
+                    {
+                        string strField = item.Replace("int ", string.Empty).Replace("long ", string.Empty);
+
+                        paramFields.Add("x." + strField + (!strField.StartsWith("IdEmpresa") ? " == " : " == this." )+ strField);
+                    }
+                }
+
+
+                string fieldsStr = string.Empty;
+                if (paramFields.ToArray()!=null)
+                    fieldsStr = string.Join(" && ", paramFields.ToArray());
+
+                return fieldsStr;
+
+            }else return string.Empty;
+
+        }catch(Exception errLinq)
+        {
+            Console.Write("erro linq: " + errLinq.Message);
+            return string.Empty;
+        }
+
+
+    }
+#>

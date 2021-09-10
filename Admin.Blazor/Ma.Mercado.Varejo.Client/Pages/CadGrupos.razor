@@ -1,0 +1,340 @@
+﻿@page "/cadgrupos"
+@using Ma.Mercado.Varejo.Models;
+@using Ma.Mercado.Varejo.Client.Classes;
+@using Newtonsoft.Json;
+@inject IHttpClientFactory ClientFactory
+@inject HttpClient hclient;
+@using System.Net.Http.Headers;
+@using System.Text.Encodings;
+@using MatBlazor;
+
+<AuthorizeView>
+    <Authorizing>
+        <center><h4>Autorizando acesso.</h4></center>
+    </Authorizing>
+    <Authorized>
+        <MatBlazor.MatCard>
+            <MatBlazor.MatCardContent>
+                <div>
+                    <table width="100%" style="background:#05163D;color:honeydew">
+                        <tr>
+                            <td width="20">&nbsp;</td>
+                            <td>
+                                <h2>Cadastro de Grupos</h2>
+                            </td>
+                            <td>&nbsp;</td>
+                            <td align="right">
+                                @if (operacao == enOperacao.Browse)
+                                {<button class="btn btn-info" @onclick="AddNovoGrupo">Incluir Novo Grupo</button>
+                                }
+                            </td>
+                            <td width="10">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"></td>
+                        </tr>
+                    </table>
+                </div>
+            </MatBlazor.MatCardContent>
+        </MatBlazor.MatCard>
+
+        <hr />
+
+
+        @if (operacao == enOperacao.Detalhe)
+        {
+            <MatBlazor.MatCard>
+                <MatBlazor.MatCardContent>
+
+                    <table class="form-group">
+                        <tr>
+                            <td>
+                                <label for="Name" class="control-label">ID</label>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" @bind-value="GrupoAtual.IdGrupo" readonly />
+                            </td>
+                            <td width="20">&nbsp;</td>
+                            <td>
+                                <label for="Name" class="control-label">Descrição</label>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" @bind-value="GrupoAtual.DsGrupo" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+
+                                <button type="submit" class="btn btn-success" @onclick="CancelarOperacao" style="width:220px;">
+                                    Voltar
+                                </button>
+                            </td>
+                        </tr>
+                    </table>
+                    </MatBlazor.MatCardContent>
+                </MatBlazor.MatCard>
+                   
+                }
+
+
+        @if (operacao == enOperacao.Editar || operacao == enOperacao.Inserir)
+        {
+
+            <table width="100%" style="background:#0A2464;color:honeydew">
+                <tr>
+                    <td width="20">&nbsp;</td>
+                    <td>
+                        <h3>
+                            @if (operacao == enOperacao.Editar)
+                            {<span> "Editar Grupo"</span>}
+                            else
+                            {
+                                <span> "Inserir Grupo"</span>}
+                        </h3>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2"></td>
+                </tr>
+            </table>
+
+            <div class="mat-elevation-z3">
+                <form>
+                    <table class="form-group">
+                        <tr>
+                            <td width="20">
+                                &nbsp;
+                                <label for="Name" class="control-label">ID</label>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" @bind-value="GrupoAtual.IdGrupo" readonly />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="20">
+                                &nbsp;
+                                <label for="Name" class="control-label">Descrição</label>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" @bind-value="GrupoAtual.DsGrupo" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+
+                                <button type="submit" class="btn btn-success" @onclick="PersisteGrupo" style="width:220px;">
+                                    <div>Salvar </div>
+                                    <div>@GrupoAtual.DsGrupo</div>
+                                </button>
+                            </td>
+                            <td>
+                                <button type="submit" class="btn btn-danger" @onclick="CancelarOperacao" style="width:220px;">Cancelar</button>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        }
+
+        @if (operacao == enOperacao.Browse)
+        {
+            <MatBlazor.MatCard>
+                <MatBlazor.MatCardContent>
+
+                    <table width="100%" style="background:#0A2464;color:honeydew">
+                        <tr>
+                            <td width="20">&nbsp;</td>
+                            <td>
+                                <h3>Grupos</h3>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"></td>
+                        </tr>
+                    </table>
+
+                    @if (ListGrupos.Count == 0)
+                    {
+                        <center>
+                            <MatBlazor.MatProgressBar Indeterminate="true"></MatBlazor.MatProgressBar>
+                            <p><em>Carregando...</em></p>
+                        </center>
+
+                    }
+                    else
+                    {
+                        <div class="row">
+                            <SfGrid width="100%" DataSource="@ListGrupos" AllowPaging="true">
+                                <GridPageSettings PageCount="5" PageSizes="true"></GridPageSettings>
+                                <GridEvents CommandClicked="OnCommandClicked" TValue="Grupos"></GridEvents>
+                                <GridColumns>
+                                    <GridColumn Field=@nameof(GrupoAtual.IdGrupo) HeaderText="ID" TextAlign="TextAlign.Right" Width="120">
+                                    </GridColumn>
+                                    <GridColumn Field=@nameof(GrupoAtual.DsGrupo) HeaderText="Descrição" AutoFit="true" Width="150">
+                                    </GridColumn>
+                                    <GridColumn HeaderText="-" Width="150">
+                                        <GridCommandColumns>
+                                            <GridCommandColumn Type="CommandButtonType.Edit" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-edit", CssClass = "e-flat" })"></GridCommandColumn>
+                                            <GridCommandColumn Type="CommandButtonType.Delete" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-delete", CssClass = "e-flat" })"></GridCommandColumn>
+                                        </GridCommandColumns>
+                                    </GridColumn>
+                                </GridColumns>
+                            </SfGrid>
+                        </div>
+                    }
+
+                </MatBlazor.MatCardContent>
+            </MatBlazor.MatCard>
+        }
+
+
+
+        @code{
+
+            List<Grupos> ListGrupos = new List<Grupos>();
+            Grupos GrupoAtual = null;
+
+
+
+
+            enOperacao operacao;
+
+
+            protected HttpClient InitClient()
+            {
+                HttpClient client = new HttpClient();
+                //hclient.SetBearerToken
+                client.BaseAddress = new Uri(Constants.UrlApi);
+                Console.WriteLine($"Bearer token: {Constants.GlobalToken.AccessToken}");
+                client.SetBearerToken(Constants.GlobalToken.AccessToken);
+                return client;
+            }
+
+
+            protected override async Task OnInitializedAsync()
+            {
+
+                operacao = enOperacao.Browse;
+
+                var client = ClientFactory.CreateClient("api");
+                // client.SetBearerToken(Program.GlobalToken.AccessToken);
+                //hclient = InitClient();
+                ListGrupos = await client.GetJsonAsync<List<Grupos>>("Grupos/GetGruposs");
+                GrupoAtual = new Grupos();
+            }
+
+
+            void CancelarOperacao()
+            {
+                operacao = enOperacao.Browse;
+                GrupoAtual = new Grupos();
+            }
+
+            public void OnCommandClicked(CommandClickEventArgs<Grupos> args)
+            {
+                if (args.CommandColumn.Type == CommandButtonType.Edit)
+                {
+                    GrupoAtual = args.RowData;
+                    operacao = enOperacao.Editar;
+                }
+                else if (args.CommandColumn.Type == CommandButtonType.Delete)
+                {
+
+                }
+            }
+
+
+
+            protected HttpRequestMessage inicializar(string metodo, object param)
+            {
+
+                var request = new HttpRequestMessage(HttpMethod.Post, $"{Constants.UrlApi}{metodo}");
+
+                // set request body
+                var postBody = new { Title = "Blazor POST Request Example" };
+                request.Content = new StringContent(JsonConvert.SerializeObject(param), System.Text.Encoding.UTF8, "application/json");
+
+                // add authorization header
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Constants.GlobalToken.AccessToken);
+
+                return request;
+            }
+
+
+            void AddNovoGrupo()
+            {
+                GrupoAtual = new Grupos();
+                operacao = enOperacao.Inserir;
+            }
+
+            // Adicionar detalhes
+            protected async Task PersisteGrupo()
+            {
+                var client = ClientFactory.CreateClient("api");
+                //GrupoAtual = new Grupos();
+
+                //GrupoAtual.DsGrupo = "banaa";
+
+                //Console.Clear();
+                Console.WriteLine($"GrupoAtual.IdGrupo: {GrupoAtual.IdGrupo}");
+                if (GrupoAtual.IdGrupo == 0)
+                {
+
+
+                    Console.WriteLine($"GrupoAtual: post {GrupoAtual.DsGrupo}");
+
+                    //var content = PostContent.PrepareData(GrupoAtual);
+
+                    var data = new { IdGrupo = GrupoAtual.IdGrupo, DsGrupo = GrupoAtual.DsGrupo };
+
+                    var xcontent = new StringContent(JsonConvert.SerializeObject(data), System.Text.Encoding.UTF8, "application/json");
+
+
+                    var rst = await client.PostAsync("Grupos/PostGrupos/", xcontent);
+
+                    //HttpClient httpc = new HttpClient();
+                    //httpc.BaseAddress = new Uri(Constants.UrlApi);
+
+
+                    //var rst = await httpc.SendAsync(inicializar("Grupos/PostGrupos/", GrupoAtual));
+
+
+                    if (rst.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        var apiResponse = rst.Content.ReadAsStringAsync();
+                        GrupoAtual = JsonConvert.DeserializeObject<Grupos>(apiResponse.Result);
+                    }
+                }
+                else
+                {
+                    var data = new { IdGrupo = GrupoAtual.IdGrupo, DsGrupo = GrupoAtual.DsGrupo };
+                    var xcontent = new StringContent(JsonConvert.SerializeObject(data), System.Text.Encoding.UTF8, "application/json");
+
+                    var rst = await client.PutAsync("Grupos/PutGrupos/", xcontent);
+                    Console.WriteLine($"GrupoAtual: put");
+                    if (rst.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        var apiResponse = rst.Content.ReadAsStringAsync();
+                        GrupoAtual = JsonConvert.DeserializeObject<Grupos>(apiResponse.Result);
+                    }
+                }
+
+                operacao = enOperacao.Detalhe;
+                //GrupoAtual = await client.GetJsonAsync<Grupos>($"/api/GetGruposById/id={}");
+            }
+            // Editar
+            protected async Task EditGrupo(int grupoID)
+            {
+                var client = ClientFactory.CreateClient("api");
+                GrupoAtual = await client.GetFromJsonAsync<Grupos>($"{Constants.UrlApi}Grupos/GetGruposById/id={grupoID}");
+                operacao = enOperacao.Editar;
+            }
+
+        }
+    </Authorized>
+    <NotAuthorized>
+        <h1>Sem permissão para acessar esse recurso</h1>
+    </NotAuthorized>
+</AuthorizeView>

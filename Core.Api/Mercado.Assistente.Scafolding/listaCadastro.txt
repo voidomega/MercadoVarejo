@@ -1,0 +1,17 @@
+Categorias=_NT_
+Clientes=_NT_
+DadosCobrancas=_NT_
+EnderecoClientes=_NT_
+Familias=_NT_
+Funcionarios=_NT_
+HistoricoPedidos=_NT_
+ImagensProduto=_NT_
+ItemPedidos=_NT_
+Marcas=_NT_
+Pedidos=_NT_
+Produtos=_NT_
+PromocaoProdutos=_NT_
+SituacaoPedidos=_NT_
+TipoCobranca=_NT_
+TipoEnderecos=_NT_,
+Grupos=_NT_

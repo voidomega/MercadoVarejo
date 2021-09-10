@@ -1,0 +1,729 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Sa2s.DicionarioDados.Api</name>
+    </assembly>
+    <members>
+        <member name="M:Aplicacao.Padrao.Web.Api.Controllers.AnotacaoPropriedadeController.GetAnotacaoPropriedadeByAnotacaoPropriedade(System.Int32,System.Int32)">
+            <summary>
+            Get  Anotação Propriedade por IdAnotacao e IdPropriedade
+            </summary>
+            <param name="IdAnotacao"></param>
+            <param name="IdPropriedade"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Aplicacao.Padrao.Web.Api.Controllers.AnotacaoPropriedadeController.GetAnotacaoPropriedadeByPropriedade(System.Int32)">
+            <summary>
+            consulta as Anotações Propriedade pelo Id da Propriedade
+            </summary>
+            <param name="IdPropriedade"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Aplicacao.Padrao.Web.Api.Controllers.EntidadeController.GetEntidadesBySistema(System.Int32)">
+            <summary>
+            Consulta as Entidades do Sistema
+            </summary>
+            <param name="IdSistema"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Aplicacao.Padrao.Web.Api.Controllers.EntidadeController.GetEntidadesBySubSistema(System.Int32)">
+            <summary>
+            Consulta as Entidades por Sub-Sistema
+            </summary>
+            <param name="IdSubSistema"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Aplicacao.Padrao.Web.Api.Controllers.PropriedadeController.GetPropriedadesByEntidade(System.Int32)">
+            <summary>
+            Consulta as Propriedades pela Entidade
+            </summary>
+            <param name="IdEntidade"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Sa2s.DicionarioDados.Api.Models.PersistePropriedade">
+            <summary>
+            Persiste Propriedade
+            </summary>
+        </member>
+        <member name="F:Sa2s.DicionarioDados.Api.Program.BOSRVCONEXAO">
+            <summary>
+            servidor API legado
+            </summary>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Api.Services.OperacaoSistemaService.LimpaSistema(System.Int32)">
+            <summary>
+            Remove todos os Sistemas
+            </summary>
+            <param name="IdSistema"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Api.Services.OperacaoSistemaService.InserePropriedade(Sa2s.DicionarioDados.Api.Models.PersistePropriedade)">
+            <summary>
+            Insere Propriedades e Anotações
+            </summary>
+            <param name="propriedade"></param>
+            <param name="Anotacoes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.AnotacaoPropriedadeService.#ctor">
+            <summary>
+            Construtor da Classe
+            </summary>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.AnotacaoPropriedadeService.SetNoTracking(System.Boolean)">
+            <summary>
+            Ativa ou desativa o Tracking das entidades carregadas.
+            </summary>
+            <param name="TrackOnOff">Boolean</param>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.AnotacaoPropriedadeService.Post(Sa2s.DicionarioDados.Domain.Entities.AnotacaoPropriedade)">
+            <summary>
+            insere uma entidade da classe AnotacaoPropriedade
+            </summary>
+            <param name="anotacaopropriedade"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.AnotacaoPropriedadeService.Put(Sa2s.DicionarioDados.Domain.Entities.AnotacaoPropriedade)">
+            <summary>
+            Edita uma entidade da classe AnotacaoPropriedade
+            </summary>
+            <param name="anotacaopropriedade"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.AnotacaoPropriedadeService.Delete(System.Int32)">
+            <summary>
+            Exclui uma entidade da classe AnotacaoPropriedade
+            </summary>
+            <param name="Id"></param>
+            <returns></returns>        
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.AnotacaoPropriedadeService.GetAllAnotacaoPropriedades">
+            <summary>
+            Faz um select "All" na tabela da classe AnotacaoPropriedade
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.AnotacaoPropriedadeService.GetAnotacaoPropriedadeById(System.Int32)">
+            <summary>
+            Retorna um único registro da classe AnotacaoPropriedade a partir da PK
+            </summary>
+            <param name="Id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.AnotacaoPropriedadeService.GetAnotacaoPropriedadeByAnotacaoPropriedade(System.Int32,System.Int32)">
+            <summary>
+            GetAnotacaoPropriedadeByAnotacaoIdPropriedade
+            </summary>
+            <param name="IdAnotacao"></param>
+            <param name="IdPropriedade"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.AnotacaoPropriedadeService.GetAnotacaoPropriedadeByPropriedade(System.Int32)">
+            <summary>
+            GetAnotacaoPropriedadeByPropriedade
+            </summary>
+            <param name="IdPropriedade"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.AnotacaoPropriedadeService.SelectIEnumerable(System.Linq.Expressions.Expression{System.Func{Sa2s.DicionarioDados.Domain.Entities.AnotacaoPropriedade,System.Boolean}})">
+            <summary>
+            Permite realizar uma consulta usando Linq na tabela AnotacaoPropriedade
+            </summary>
+            <param name="predicate">um predicado Lambda para montar uma consulta parametrizada</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.AnotacaoService.#ctor">
+            <summary>
+            Construtor da Classe
+            </summary>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.AnotacaoService.SetNoTracking(System.Boolean)">
+            <summary>
+            Ativa ou desativa o Tracking das entidades carregadas.
+            </summary>
+            <param name="TrackOnOff">Boolean</param>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.AnotacaoService.Post(Sa2s.DicionarioDados.Domain.Entities.Anotacao)">
+            <summary>
+            insere uma entidade da classe Anotacao
+            </summary>
+            <param name="anotacao"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.AnotacaoService.Put(Sa2s.DicionarioDados.Domain.Entities.Anotacao)">
+            <summary>
+            Edita uma entidade da classe Anotacao
+            </summary>
+            <param name="anotacao"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.AnotacaoService.Delete(System.Int32)">
+            <summary>
+            Exclui uma entidade da classe Anotacao
+            </summary>
+            <param name="Id"></param>
+            <returns></returns>        
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.AnotacaoService.GetAllAnotacaos">
+            <summary>
+            Faz um select "All" na tabela da classe Anotacao
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.AnotacaoService.GetAnotacaoById(System.Int32)">
+            <summary>
+            Retorna um único registro da classe Anotacao a partir da PK
+            </summary>
+            <param name="Id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.AnotacaoService.SelectIEnumerable(System.Linq.Expressions.Expression{System.Func{Sa2s.DicionarioDados.Domain.Entities.Anotacao,System.Boolean}})">
+            <summary>
+            Permite realizar uma consulta usando Linq na tabela Anotacao
+            </summary>
+            <param name="predicate">um predicado Lambda para montar uma consulta parametrizada</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.EmpresaService.#ctor">
+            <summary>
+            Construtor da Classe
+            </summary>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.EmpresaService.SetNoTracking(System.Boolean)">
+            <summary>
+            Ativa ou desativa o Tracking das entidades carregadas.
+            </summary>
+            <param name="TrackOnOff">Boolean</param>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.EmpresaService.Post(Sa2s.DicionarioDados.Domain.Entities.Empresa)">
+            <summary>
+            insere uma entidade da classe Empresa
+            </summary>
+            <param name="empresa"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.EmpresaService.Put(Sa2s.DicionarioDados.Domain.Entities.Empresa)">
+            <summary>
+            Edita uma entidade da classe Empresa
+            </summary>
+            <param name="empresa"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.EmpresaService.Delete(System.Int32)">
+            <summary>
+            Exclui uma entidade da classe Empresa
+            </summary>
+            <param name="Id"></param>
+            <returns></returns>        
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.EmpresaService.GetAllEmpresas">
+            <summary>
+            Faz um select "All" na tabela da classe Empresa
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.EmpresaService.GetEmpresaById(System.Int32)">
+            <summary>
+            Retorna um único registro da classe Empresa a partir da PK
+            </summary>
+            <param name="Id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.EmpresaService.SelectIEnumerable(System.Linq.Expressions.Expression{System.Func{Sa2s.DicionarioDados.Domain.Entities.Empresa,System.Boolean}})">
+            <summary>
+            Permite realizar uma consulta usando Linq na tabela Empresa
+            </summary>
+            <param name="predicate">um predicado Lambda para montar uma consulta parametrizada</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.EntidadeService.#ctor">
+            <summary>
+            Construtor da Classe
+            </summary>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.EntidadeService.SetNoTracking(System.Boolean)">
+            <summary>
+            Ativa ou desativa o Tracking das entidades carregadas.
+            </summary>
+            <param name="TrackOnOff">Boolean</param>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.EntidadeService.Post(Sa2s.DicionarioDados.Domain.Entities.Entidade)">
+            <summary>
+            insere uma entidade da classe Entidade
+            </summary>
+            <param name="entidade"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.EntidadeService.Put(Sa2s.DicionarioDados.Domain.Entities.Entidade)">
+            <summary>
+            Edita uma entidade da classe Entidade
+            </summary>
+            <param name="entidade"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.EntidadeService.Delete(System.Int32)">
+            <summary>
+            Exclui uma entidade da classe Entidade
+            </summary>
+            <param name="Id"></param>
+            <returns></returns>        
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.EntidadeService.GetAllEntidades">
+            <summary>
+            Faz um select "All" na tabela da classe Entidade
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.EntidadeService.GetEntidadesBySistema(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="IdSistema"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.EntidadeService.GetEntidadesBySubSistema(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="IdSubSistema"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.EntidadeService.GetEntidadeById(System.Int32)">
+            <summary>
+            Retorna um único registro da classe Entidade a partir da PK
+            </summary>
+            <param name="Id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.EntidadeService.SelectIEnumerable(System.Linq.Expressions.Expression{System.Func{Sa2s.DicionarioDados.Domain.Entities.Entidade,System.Boolean}})">
+            <summary>
+            Permite realizar uma consulta usando Linq na tabela Entidade
+            </summary>
+            <param name="predicate">um predicado Lambda para montar uma consulta parametrizada</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.ParametroService.#ctor">
+            <summary>
+            Construtor da Classe
+            </summary>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.ParametroService.SetNoTracking(System.Boolean)">
+            <summary>
+            Ativa ou desativa o Tracking das entidades carregadas.
+            </summary>
+            <param name="TrackOnOff">Boolean</param>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.ParametroService.Post(Sa2s.DicionarioDados.Domain.Entities.Parametro)">
+            <summary>
+            insere uma entidade da classe Parametro
+            </summary>
+            <param name="parametro"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.ParametroService.Put(Sa2s.DicionarioDados.Domain.Entities.Parametro)">
+            <summary>
+            Edita uma entidade da classe Parametro
+            </summary>
+            <param name="parametro"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.ParametroService.Delete(System.Int32)">
+            <summary>
+            Exclui uma entidade da classe Parametro
+            </summary>
+            <param name="Id"></param>
+            <returns></returns>        
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.ParametroService.GetAllParametros">
+            <summary>
+            Faz um select "All" na tabela da classe Parametro
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.ParametroService.GetParametroById(System.Int32)">
+            <summary>
+            Retorna um único registro da classe Parametro a partir da PK
+            </summary>
+            <param name="Id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.ParametroService.SelectIEnumerable(System.Linq.Expressions.Expression{System.Func{Sa2s.DicionarioDados.Domain.Entities.Parametro,System.Boolean}})">
+            <summary>
+            Permite realizar uma consulta usando Linq na tabela Parametro
+            </summary>
+            <param name="predicate">um predicado Lambda para montar uma consulta parametrizada</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.PropriedadeService.#ctor">
+            <summary>
+            Construtor da Classe
+            </summary>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.PropriedadeService.SetNoTracking(System.Boolean)">
+            <summary>
+            Ativa ou desativa o Tracking das entidades carregadas.
+            </summary>
+            <param name="TrackOnOff">Boolean</param>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.PropriedadeService.Post(Sa2s.DicionarioDados.Domain.Entities.Propriedade)">
+            <summary>
+            insere uma entidade da classe Propriedade
+            </summary>
+            <param name="propriedade"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.PropriedadeService.Put(Sa2s.DicionarioDados.Domain.Entities.Propriedade)">
+            <summary>
+            Edita uma entidade da classe Propriedade
+            </summary>
+            <param name="propriedade"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.PropriedadeService.Delete(System.Int32)">
+            <summary>
+            Exclui uma entidade da classe Propriedade
+            </summary>
+            <param name="Id"></param>
+            <returns></returns>        
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.PropriedadeService.GetAllPropriedades">
+            <summary>
+            Faz um select "All" na tabela da classe Propriedade
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.PropriedadeService.GetPropriedadesByEntidade(System.Int32)">
+            <summary>
+            Consulta as Propriedades pela Entidade
+            </summary>
+            <param name="Identidade"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.PropriedadeService.GetPropriedadeById(System.Int32)">
+            <summary>
+            Retorna um único registro da classe Propriedade a partir da PK
+            </summary>
+            <param name="Id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.PropriedadeService.SelectIEnumerable(System.Linq.Expressions.Expression{System.Func{Sa2s.DicionarioDados.Domain.Entities.Propriedade,System.Boolean}})">
+            <summary>
+            Permite realizar uma consulta usando Linq na tabela Propriedade
+            </summary>
+            <param name="predicate">um predicado Lambda para montar uma consulta parametrizada</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.RelatorioExclusivoEmpresaService.#ctor">
+            <summary>
+            Construtor da Classe
+            </summary>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.RelatorioExclusivoEmpresaService.SetNoTracking(System.Boolean)">
+            <summary>
+            Ativa ou desativa o Tracking das entidades carregadas.
+            </summary>
+            <param name="TrackOnOff">Boolean</param>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.RelatorioExclusivoEmpresaService.Post(Sa2s.DicionarioDados.Domain.Entities.RelatorioExclusivoEmpresa)">
+            <summary>
+            insere uma entidade da classe RelatorioExclusivoEmpresa
+            </summary>
+            <param name="relatorioexclusivoempresa"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.RelatorioExclusivoEmpresaService.Put(Sa2s.DicionarioDados.Domain.Entities.RelatorioExclusivoEmpresa)">
+            <summary>
+            Edita uma entidade da classe RelatorioExclusivoEmpresa
+            </summary>
+            <param name="relatorioexclusivoempresa"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.RelatorioExclusivoEmpresaService.Delete(System.Int32)">
+            <summary>
+            Exclui uma entidade da classe RelatorioExclusivoEmpresa
+            </summary>
+            <param name="Id"></param>
+            <returns></returns>        
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.RelatorioExclusivoEmpresaService.GetAllRelatorioExclusivoEmpresas">
+            <summary>
+            Faz um select "All" na tabela da classe RelatorioExclusivoEmpresa
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.RelatorioExclusivoEmpresaService.GetRelatorioExclusivoEmpresaById(System.Int32)">
+            <summary>
+            Retorna um único registro da classe RelatorioExclusivoEmpresa a partir da PK
+            </summary>
+            <param name="Id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.RelatorioExclusivoEmpresaService.SelectIEnumerable(System.Linq.Expressions.Expression{System.Func{Sa2s.DicionarioDados.Domain.Entities.RelatorioExclusivoEmpresa,System.Boolean}})">
+            <summary>
+            Permite realizar uma consulta usando Linq na tabela RelatorioExclusivoEmpresa
+            </summary>
+            <param name="predicate">um predicado Lambda para montar uma consulta parametrizada</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.RelatorioService.#ctor">
+            <summary>
+            Construtor da Classe
+            </summary>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.RelatorioService.SetNoTracking(System.Boolean)">
+            <summary>
+            Ativa ou desativa o Tracking das entidades carregadas.
+            </summary>
+            <param name="TrackOnOff">Boolean</param>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.RelatorioService.Post(Sa2s.DicionarioDados.Domain.Entities.Relatorio)">
+            <summary>
+            insere uma entidade da classe Relatorio
+            </summary>
+            <param name="relatorio"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.RelatorioService.Put(Sa2s.DicionarioDados.Domain.Entities.Relatorio)">
+            <summary>
+            Edita uma entidade da classe Relatorio
+            </summary>
+            <param name="relatorio"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.RelatorioService.Delete(System.Int32)">
+            <summary>
+            Exclui uma entidade da classe Relatorio
+            </summary>
+            <param name="Id"></param>
+            <returns></returns>        
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.RelatorioService.GetAllRelatorios">
+            <summary>
+            Faz um select "All" na tabela da classe Relatorio
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.RelatorioService.GetRelatorioById(System.Int32)">
+            <summary>
+            Retorna um único registro da classe Relatorio a partir da PK
+            </summary>
+            <param name="Id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.RelatorioService.SelectIEnumerable(System.Linq.Expressions.Expression{System.Func{Sa2s.DicionarioDados.Domain.Entities.Relatorio,System.Boolean}})">
+            <summary>
+            Permite realizar uma consulta usando Linq na tabela Relatorio
+            </summary>
+            <param name="predicate">um predicado Lambda para montar uma consulta parametrizada</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.SistemaService.#ctor">
+            <summary>
+            Construtor da Classe
+            </summary>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.SistemaService.SetNoTracking(System.Boolean)">
+            <summary>
+            Ativa ou desativa o Tracking das entidades carregadas.
+            </summary>
+            <param name="TrackOnOff">Boolean</param>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.SistemaService.Post(Sa2s.DicionarioDados.Domain.Entities.Sistema)">
+            <summary>
+            insere uma entidade da classe Sistema
+            </summary>
+            <param name="sistema"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.SistemaService.Put(Sa2s.DicionarioDados.Domain.Entities.Sistema)">
+            <summary>
+            Edita uma entidade da classe Sistema
+            </summary>
+            <param name="sistema"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.SistemaService.Delete(System.Int32)">
+            <summary>
+            Exclui uma entidade da classe Sistema
+            </summary>
+            <param name="Id"></param>
+            <returns></returns>        
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.SistemaService.GetAllSistemas">
+            <summary>
+            Faz um select "All" na tabela da classe Sistema
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.SistemaService.GetSistemaById(System.Int32)">
+            <summary>
+            Retorna um único registro da classe Sistema a partir da PK
+            </summary>
+            <param name="Id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.SistemaService.SelectIEnumerable(System.Linq.Expressions.Expression{System.Func{Sa2s.DicionarioDados.Domain.Entities.Sistema,System.Boolean}})">
+            <summary>
+            Permite realizar uma consulta usando Linq na tabela Sistema
+            </summary>
+            <param name="predicate">um predicado Lambda para montar uma consulta parametrizada</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.SubSistemaService.#ctor">
+            <summary>
+            Construtor da Classe
+            </summary>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.SubSistemaService.SetNoTracking(System.Boolean)">
+            <summary>
+            Ativa ou desativa o Tracking das entidades carregadas.
+            </summary>
+            <param name="TrackOnOff">Boolean</param>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.SubSistemaService.Post(Sa2s.DicionarioDados.Domain.Entities.SubSistema)">
+            <summary>
+            insere uma entidade da classe SubSistema
+            </summary>
+            <param name="subsistema"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.SubSistemaService.Put(Sa2s.DicionarioDados.Domain.Entities.SubSistema)">
+            <summary>
+            Edita uma entidade da classe SubSistema
+            </summary>
+            <param name="subsistema"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.SubSistemaService.Delete(System.Int32)">
+            <summary>
+            Exclui uma entidade da classe SubSistema
+            </summary>
+            <param name="Id"></param>
+            <returns></returns>        
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.SubSistemaService.GetAllSubSistemas">
+            <summary>
+            Faz um select "All" na tabela da classe SubSistema
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.SubSistemaService.GetSubSistemaById(System.Int32)">
+            <summary>
+            Retorna um único registro da classe SubSistema a partir da PK
+            </summary>
+            <param name="Id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.SubSistemaService.SelectIEnumerable(System.Linq.Expressions.Expression{System.Func{Sa2s.DicionarioDados.Domain.Entities.SubSistema,System.Boolean}})">
+            <summary>
+            Permite realizar uma consulta usando Linq na tabela SubSistema
+            </summary>
+            <param name="predicate">um predicado Lambda para montar uma consulta parametrizada</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.TipoParametroService.#ctor">
+            <summary>
+            Construtor da Classe
+            </summary>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.TipoParametroService.SetNoTracking(System.Boolean)">
+            <summary>
+            Ativa ou desativa o Tracking das entidades carregadas.
+            </summary>
+            <param name="TrackOnOff">Boolean</param>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.TipoParametroService.Post(Sa2s.DicionarioDados.Domain.Entities.TipoParametro)">
+            <summary>
+            insere uma entidade da classe TipoParametro
+            </summary>
+            <param name="tipoparametro"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.TipoParametroService.Put(Sa2s.DicionarioDados.Domain.Entities.TipoParametro)">
+            <summary>
+            Edita uma entidade da classe TipoParametro
+            </summary>
+            <param name="tipoparametro"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.TipoParametroService.Delete(System.Int32)">
+            <summary>
+            Exclui uma entidade da classe TipoParametro
+            </summary>
+            <param name="Id"></param>
+            <returns></returns>        
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.TipoParametroService.GetAllTipoParametros">
+            <summary>
+            Faz um select "All" na tabela da classe TipoParametro
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.TipoParametroService.GetTipoParametroById(System.Int32)">
+            <summary>
+            Retorna um único registro da classe TipoParametro a partir da PK
+            </summary>
+            <param name="Id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.TipoParametroService.SelectIEnumerable(System.Linq.Expressions.Expression{System.Func{Sa2s.DicionarioDados.Domain.Entities.TipoParametro,System.Boolean}})">
+            <summary>
+            Permite realizar uma consulta usando Linq na tabela TipoParametro
+            </summary>
+            <param name="predicate">um predicado Lambda para montar uma consulta parametrizada</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.TipoPropriedadeService.#ctor">
+            <summary>
+            Construtor da Classe
+            </summary>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.TipoPropriedadeService.SetNoTracking(System.Boolean)">
+            <summary>
+            Ativa ou desativa o Tracking das entidades carregadas.
+            </summary>
+            <param name="TrackOnOff">Boolean</param>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.TipoPropriedadeService.GetAllTipoPropriedades">
+            <summary>
+            Faz um select "All" na tabela da classe TipoPropriedade
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.TipoPropriedadeService.GetTipoPropriedadeById(System.Int32)">
+            <summary>
+            Retorna um único registro da classe TipoPropriedade a partir da PK
+            </summary>
+            <param name="Id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sa2s.DicionarioDados.Services.TipoPropriedadeService.SelectIEnumerable(System.Linq.Expressions.Expression{System.Func{Sa2s.DicionarioDados.Domain.Entities.TipoPropriedade,System.Boolean}})">
+            <summary>
+            Permite realizar uma consulta usando Linq na tabela TipoPropriedade
+            </summary>
+            <param name="predicate">um predicado Lambda para montar uma consulta parametrizada</param>
+            <returns></returns>
+        </member>
+        <member name="T:ByteOn.Valor.PortalCliente.Api.UtilString">
+            <summary>
+            Classe de Utilitario
+            s para formatar strings.
+            </summary>
+        </member>
+        <member name="M:ByteOn.Valor.PortalCliente.Api.UtilString.RemoveDiacritics(System.String,System.Boolean)">
+            <summary>
+            Remove acentos 
+            </summary>
+            <param name="text"></param>
+            <param name="RemoveEspecialChars"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ByteOn.Valor.PortalCliente.Api.UtilString.RemoveSpecialCharacters(System.String)">
+            <summary>
+            Remove caracteres especiais
+            </summary>
+            <param name="str"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

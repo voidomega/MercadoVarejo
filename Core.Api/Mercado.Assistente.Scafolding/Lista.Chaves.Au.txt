@@ -1,0 +1,17 @@
+﻿Categorias;IdCategoria;int
+Clientes;IdCliente;int
+DadosCobrancas;IdDadosCobranca;long
+EnderecoClientes;IdEnderecoCliente;int
+Familias;IdFamilia;int
+Funcionarios;IdFuncionario;int
+HistoricoPedidos;IdHistoricoPedido;int
+ImagensProduto;IdImagenProduto;long
+ItemPedidos;IdItemPedido;long
+Marcas;IdMarca;int
+Pedidos;IdPedido;long
+Produtos;IdProduto;long
+PromocaoProdutos;IdPromocaoProdutos;int
+SituacaoPedidos;IdSituacaoPedidos;int
+TipoCobranca;ItipoCobranca;int
+TipoEnderecos;IdTipoEndereco;int
+Grupos;IdCategoria;IdGrupo;int

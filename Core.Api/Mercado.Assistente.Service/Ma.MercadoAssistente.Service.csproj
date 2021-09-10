@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <AssemblyName>Ma.MercadoAssistente.Service</AssemblyName>
+    <Version>1.0.42</Version>
+    <RootNamespace>Mercado.Assistente.Service</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Context\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Ma.Interfaces" Version="1.0.36" />
+    <PackageReference Include="Ma.MercadoAssistente.Data.Layer" Version="1.0.42" />
+  </ItemGroup>
+
+</Project>

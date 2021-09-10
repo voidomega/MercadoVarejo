@@ -1,0 +1,66 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+    <Platforms>AnyCPU;x64</Platforms>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>C:\source\Sa2s\Sa2s.Dicionario.Api\Sa2s.DicionarioDados.Api\Sa2s.DicionarioDados.Api.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <DocumentationFile></DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="OldControllers\**" />
+    <Content Remove="OldControllers\**" />
+    <EmbeddedResource Remove="OldControllers\**" />
+    <None Remove="OldControllers\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="UtilHeader.cs" />
+    <Compile Remove="XControllers\CtrlAcessoController.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="3.0.1" />
+    <PackageReference Include="Ma.Interfaces" Version="1.0.36" />
+    <PackageReference Include="Ma.Util.Api" Version="1.0.34" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.9">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.4" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.1.4" />
+    <PackageReference Include="System.Text.Json" Version="4.7.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="UtilHeader.cs" />
+    <None Include="Controllers\CtrlAcessoController.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="BO\" />
+    <Folder Include="XControllers\" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+    <ApplicationIcon />
+    <OutputType>Exe</OutputType>
+    <StartupObject>Sa2s.DicionarioDados.Api.Program</StartupObject>
+    <Version>1.0.34</Version>
+    <AssemblyName>Ma.MercadoAssistente.Api</AssemblyName>
+    <RootNamespace>Ma.MercadoAssistente.Api</RootNamespace>
+  </PropertyGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties properties_4launchsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+
+</Project>

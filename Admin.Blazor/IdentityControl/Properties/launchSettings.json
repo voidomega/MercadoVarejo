@@ -1,0 +1,20 @@
+{
+  "profiles": {
+    "SelfHost": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "BOSERVERTYPE": "PostGreSql",
+        "BOSRVCONEXAO": "http://189.1.170.38",
+        "BOSERVERNAME": "191.252.191.144",
+        "CONNSTRFMT": "Pooling=true;Minimum Pool Size=10;Maximum Pool Size=10;Host=SRVNAM;Port=SRVPOR;Database=DATNAM;Username=USRNAM;Password=USRPWD",
+        "BOUSERNAME": "andreluc",
+        "BODATABASENAME": "MercadoVarejo",
+        "BOSERVERPORT": "9684",
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "BOUSERPASS": "f@5f!le3TsMqu"
+      },
+      "applicationUrl": "https://localhost:5000"
+    }
+  }
+}

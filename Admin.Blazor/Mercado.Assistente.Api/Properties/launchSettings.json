@@ -1,0 +1,52 @@
+{
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iis": {
+      "applicationUrl": "http://localhost/Ma.MercadoAssistente.Api",
+      "sslPort": 0
+    },
+    "iisExpress": {
+      "applicationUrl": "http://localhost:50199",
+      "sslPort": 0
+    }
+  },
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "IIS Express": {
+      "commandName": "Executable",
+      "executablePath": "D:\\Projects\\MercadoAssitente\\MercadoVarejo\\Admin.Blazor\\Mercado.Assistente.Api\\bin\\x64\\Debug\\netcoreapp3.1\\Ma.MercadoAssistente.Api.exe",
+      "launchBrowser": true,
+      "launchUrl": "api/values",
+      "environmentVariables": {
+        "BOSERVERTYPE": "PostGreSql",
+        "BOSRVCONEXAO": "http://189.1.170.38",
+        "BOSERVERNAME": "191.252.191.144",
+        "BOUSERNAME": "andreluc",
+        "BODATABASENAME": "MercadoVarejo",
+        "BOSERVERPORT": "9684",
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "XXCONNSTRFMT": "Pooling=true;Minimum Pool Size=10;Maximum Pool Size=10;Host=SRVNAM;Port=SRVPOR;Database=DATNAM;Username=USRNAM;Password=USRPWD;SearchPath=public",
+        "BOUSERPASS": "f@5f!le3TsMqu"
+      }
+    },
+    "Ma.MercadoAssistente.Api": {
+      "commandName": "Executable",
+      "executablePath": "D:\\Projects\\MercadoAssitente\\MercadoVarejo\\Admin.Blazor\\Mercado.Assistente.Api\\bin\\x64\\Debug\\netcoreapp3.1\\Ma.MercadoAssistente.Api.exe",
+      "launchBrowser": true,
+      "launchUrl": "api/values",
+      "environmentVariables": {
+        "BOSERVERTYPE": "PostGreSql",
+        "BOSRVCONEXAO": "http://189.1.170.38",
+        "BOSERVERNAME": "191.252.191.144",
+        "BOUSERNAME": "andreluc",
+        "BODATABASENAME": "MercadoVarejo",
+        "BOSERVERPORT": "9684",
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "XXCONNSTRFMT": "Pooling=true;Minimum Pool Size=10;Maximum Pool Size=10;Host=SRVNAM;Port=SRVPOR;Database=DATNAM;Username=USRNAM;Password=USRPWD;SearchPath=public",
+        "BOUSERPASS": "f@5f!le3TsMqu"
+      },
+      "XXXapplicationUrl": "http://localhost:5040"
+    }
+  }
+}

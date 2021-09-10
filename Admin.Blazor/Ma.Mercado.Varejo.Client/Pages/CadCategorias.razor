@@ -1,0 +1,607 @@
+﻿@page "/cadcategorias"
+@using Ma.Mercado.Varejo.Models;
+@using Ma.Mercado.Varejo.Client.Classes;
+@using Newtonsoft.Json;
+@inject IHttpClientFactory ClientFactory;
+@inject HttpClient hclient;
+@using System.Net.Http.Headers;
+@using System.Text.Encodings;
+@using Syncfusion.Blazor.Popups;
+@inject NavigationManager NavManager;
+<AuthorizeView>
+    <Authorizing>
+        <center><h4>Autorizando acesso.</h4></center>
+    </Authorizing>
+    <Authorized>
+        @if (operacao == enOperacao.Excluir)
+        {
+
+            <SfDialog @bind-Visible="@ConfirmDlgVisible" Width="400px" Target="#target" ShowCloseIcon="true">
+                <DialogTemplates>
+                    <Header>
+                        <table width="100%" style="background:#0A2464;color:honeydew">
+                            <tr>
+                                <td width="20">&nbsp;</td>
+                                <td>
+                                    <h3>
+                                        Excluir essa Categoria
+
+                                    </h3>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2"></td>
+                            </tr>
+                        </table>
+                    </Header>
+                    <Content>
+                        <table class="form-group">
+                            <tr>
+                                <td width="20">&nbsp;</td>
+                                <td>
+                                    <label for="Name" class="control-label">ID</label>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" @bind-value="CategoriaAtual.IdCategoria" readonly />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="20">&nbsp;</td>
+                                <td>
+                                    <label for="Name" class="control-label">Descrição</label>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" @bind-value="CategoriaAtual.DsCategoria" readonly />
+                                </td>
+                            </tr>
+                        </table>
+                    </Content>
+                </DialogTemplates>
+                <DialogEvents OnOpen="@BeforeDialogOpen" Closed="@DialogClose"></DialogEvents>
+                <DialogButtons>
+                    <DialogButton Content="Sim" IsPrimary="true" OnClick="@HideDialogDelete" />
+                    <DialogButton Content="Não" OnClick="@HideDialog" />
+                </DialogButtons>
+            </SfDialog>
+        }
+
+        <MatBlazor.MatCard>
+            <MatBlazor.MatCardContent>
+                <div>
+                    <table width="100%" style="background:#05163D;color:honeydew">
+                        <tr>
+                            <td width="20">&nbsp;</td>
+                            <td>
+                                <h2>Cadastro de Categorias</h2>
+                            </td>
+                            <td>&nbsp;</td>
+                            <td align="right">
+                                @if (operacao == enOperacao.Browse)
+                                {
+                                    <button class="btn btn-info" @onclick="AddNovoCategoria">Incluir Novo Categoria</button>
+                                }
+                            </td>
+                            <td width="10">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"></td>
+                        </tr>
+                    </table>
+                </div>
+            </MatBlazor.MatCardContent>
+        </MatBlazor.MatCard>
+        <hr />
+
+
+        @if (operacao == enOperacao.Detalhe)
+        {
+            <MatBlazor.MatCard>
+                <MatBlazor.MatCardContent>
+
+                    <table width="100%" style="background:#0A2464;color:honeydew">
+                        <tr>
+                            <td width="20">&nbsp;</td>
+                            <td>
+                                <h3>
+                                    Detalhe da Categoria
+
+                                </h3>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"></td>
+                        </tr>
+                    </table>
+
+                    <table class="form-group">
+                        <tr>
+                            <td>
+                                <label for="Name" class="control-label">ID</label>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" @bind-value="CategoriaAtual.IdCategoria" readonly />
+                            </td>
+                            <td width="20">&nbsp;</td>
+                            <td>
+                                <label for="Name" class="control-label">Descrição</label>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" @bind-value="CategoriaAtual.DsCategoria" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+
+                                <button type="submit" class="btn btn-success" @onclick="CancelarOperacao" style="width:220px;">
+                                    Voltar
+                                </button>
+                            </td>
+                        </tr>
+                    </table>
+                </MatBlazor.MatCardContent>
+            </MatBlazor.MatCard>
+        }
+
+
+        @if (operacao == enOperacao.Editar || operacao == enOperacao.Inserir)
+        {
+            <MatBlazor.MatCard>
+                <MatBlazor.MatCardContent>
+                    <table width="100%" style="background:#0A2464;color:honeydew">
+                        <tr>
+                            <td width="20">&nbsp;</td>
+                            <td>
+                                <h3>
+                                    @if (operacao == enOperacao.Editar)
+                                    {<span>Editar Categoria</span>}
+                                    else
+                                    {
+                                        <span>Inserir Categoria</span>}
+                                </h3>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"></td>
+                        </tr>
+                    </table>
+
+                    <div class="mat-elevation-z3">
+                        <form>
+                            <table class="form-group">
+                                <tr>
+                                    <td width="20">
+                                        &nbsp;
+                                        <label for="Name" class="control-label">ID</label>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" @bind-value="CategoriaAtual.IdCategoria" readonly />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="20">
+                                        &nbsp;
+                                        <label for="Name" class="control-label">Descrição</label>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" @bind-value="CategoriaAtual.DsCategoria" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="20">Grupo</td>
+                                    <td>
+                                        <select @bind="@CategoriaAtual.IdGrupo">
+                                            <option value="0">Selecione o Grupo</option>
+                                            @foreach (Grupos grp in ListGrupos)
+                                            {
+                                                <option value="@grp.IdGrupo">@grp.DsGrupo</option>
+                                            }
+                                        </select>
+                                        @*<SfDropDownList TValue="Grupos" Placeholder="Escolha o Grupo" TItem="Grupos" @bind-value="@CategoriaAtual.IdGrupo" DataSource="@ListGrupos">
+                                                <DropDownListFieldSettings Text="DsGrupo" Value="IdGrupo"></DropDownListFieldSettings>
+                                            </SfDropDownList>*@
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+
+                                        <button type="submit" class="btn btn-success" disabled="@DisableSave" @onclick="PersisteCategoria" style="width:220px;">
+                                            <div>Salvar </div>
+                                            <div>@CategoriaAtual.DsCategoria</div>
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <button type="submit" class="btn btn-danger" @onclick="CancelarOperacao" style="width:220px;">Cancelar</button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </form>
+                    </div>
+                </MatBlazor.MatCardContent>
+            </MatBlazor.MatCard>
+        }
+        @if (operacao == enOperacao.Browse)
+        {
+            <MatBlazor.MatCard>
+                <MatBlazor.MatCardContent>
+
+                    <table width="100%" style="background:#0A2464;color:honeydew">
+                        <tr>
+                            <td width="20">&nbsp;</td>
+                            <td>
+                                <h3>Categorias</h3>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"></td>
+                        </tr>
+                    </table>
+
+                    @if (ListCategoriaGrp.Count == 0)
+                    {
+                        <center>
+                            <MatBlazor.MatProgressBar Indeterminate="true"></MatBlazor.MatProgressBar>
+                            <p><em>Carregando...</em></p>
+                        </center>
+
+                    }
+                    else
+                    {
+                        <div class="row">
+                            <SfGrid width="100%" DataSource="@ListCategoriaGrp">
+                                <GridEvents CommandClicked="OnCommandClicked" TValue="CategoriaGrp"></GridEvents>
+                                <GridColumns>
+                                    <GridColumn Field=@nameof(CategoriaGrp.IdCategoria) HeaderText="ID" TextAlign="TextAlign.Right" Width="120">
+                                    </GridColumn>
+                                    <GridColumn Field=@nameof(CategoriaGrp.DsCategoria) HeaderText="Descrição" AutoFit="true" Width="150">
+                                    </GridColumn>
+                                    <GridColumn Field=@nameof(CategoriaGrp.DsGrupo) HeaderText="Grupo" AutoFit="true" Width="150"></GridColumn>
+                                    <GridColumn HeaderText="-" Width="150">
+                                        <GridCommandColumns>
+                                            <GridCommandColumn Type="CommandButtonType.Edit" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-edit", CssClass = "e-flat" })"></GridCommandColumn>
+                                            <GridCommandColumn Type="CommandButtonType.Delete" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-delete", CssClass = "e-flat" })"></GridCommandColumn>
+                                            <GridCommandColumn Type="CommandButtonType.None" ButtonOption="@(new CommandButtonOptions() { IconCss = "oi oi-project", CssClass = "e-flat" })"></GridCommandColumn>
+                                        </GridCommandColumns>
+                                    </GridColumn>
+                                </GridColumns>
+                            </SfGrid>
+                        </div>
+                    }
+
+                </MatBlazor.MatCardContent>
+            </MatBlazor.MatCard>
+
+
+        }
+
+
+        @code{
+
+            @*<GridColumn HeaderText="Familias" TextAlign="TextAlign.Center" Width="120">
+
+                    <Template Context="Categorias">
+                        @{
+                                                                            var categoria = (Categorias as Categorias);
+                                    <div><a href="#" @onclick="@(() => NavigateFamilia(categoria))">Ver</a></div>
+                        }
+                    </Template>
+                </GridColumn>*@
+
+
+        private bool VisDetalhe { get; set; } = false;
+        private Boolean VisEditar { get; set; } = false;
+        private bool VisBrowse { get; set; } = false;
+
+
+
+        private bool DisableSave { get; set; } = false;
+        private bool ShowButtons { get; set; } = true;
+        private bool ConfirmDlgVisible { get; set; } = false;
+
+        //List<Categorias> ListCategorias = new List<Categorias>();
+
+        Grupos SelGrupo = null;
+
+        List<CategoriaGrp> ListCategoriaGrp = new List<CategoriaGrp>();
+
+        List<Grupos> ListGrupos = new List<Grupos>();
+        Categorias CategoriaAtual = null;
+
+        //  <DropDownListFieldSettings Value="DsGrupo"></DropDownListFieldSettings>
+
+
+        enOperacao operacao;
+
+
+        private void NavigateFamilia(Categorias categoria)
+        {
+            Console.WriteLine("=================================================================================================");
+            Console.WriteLine("");
+            NavManager.NavigateTo($"cadfamilias/{categoria.IdCategoria}");
+        }
+
+        protected HttpClient InitClient()
+        {
+            HttpClient client = new HttpClient();
+            //hclient.SetBearerToken
+            client.BaseAddress = new Uri(Constants.UrlApi);
+            Console.WriteLine($"Bearer token: {Constants.GlobalToken.AccessToken}");
+            client.SetBearerToken(Constants.GlobalToken.AccessToken);
+            return client;
+        }
+
+
+        protected override async Task OnInitializedAsync()
+        {
+
+            VisDetalhe = false;
+            VisEditar = false;
+            VisBrowse = true;
+
+            operacao = enOperacao.Browse;
+            var client = ClientFactory.CreateClient("api");
+            // client.SetBearerToken(Program.GlobalToken.AccessToken);
+            //hclient = InitClient();
+            ListCategoriaGrp = await client.GetJsonAsync<List<CategoriaGrp>>("Categorias/GetCategoriass");
+            CategoriaAtual = new Categorias();
+
+
+
+            ListGrupos = await client.GetJsonAsync<List<Grupos>>("Grupos/GetGruposs");
+
+        }
+
+
+        void CancelarOperacao()
+        {
+            VisDetalhe = false;
+            VisEditar = false;
+            VisBrowse = true;
+            operacao = enOperacao.Browse;
+            CategoriaAtual = new Categorias();
+        }
+
+        public void OnCommandClicked(CommandClickEventArgs<CategoriaGrp> args)
+        {
+
+
+
+
+
+            CategoriaAtual = args.RowData;
+            if (args.CommandColumn.Type == CommandButtonType.Edit)
+            {
+                CategoriaAtual = args.RowData;
+                operacao = enOperacao.Editar;
+            }
+            else if (args.CommandColumn.Type == CommandButtonType.Delete)
+            {
+                operacao = enOperacao.Excluir;
+                ConfirmDlgVisible = true;
+            }
+
+            if (args.CommandColumn.Type == CommandButtonType.None)
+            {
+                NavigateFamilia(args.RowData);
+            }
+        }
+
+
+
+        //protected HttpRequestMessage inicializar(string metodo, object param)
+        //{
+
+        //    var request = new HttpRequestMessage(HttpMethod.Post, $"{Constants.UrlApi}{metodo}");
+
+        //    // set request body
+        //    var postBody = new { Title = "Blazor POST Request Example" };
+        //    request.Content = new StringContent(JsonConvert.SerializeObject(param), System.Text.Encoding.UTF8, "application/json");
+
+        //    // add authorization header
+        //    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Constants.GlobalToken.AccessToken);
+
+        //    return request;
+        //}
+
+
+        protected async Task AddNovoCategoria()
+        {
+            CategoriaAtual = new Categorias();
+            var client = ClientFactory.CreateClient("api");
+            if (ListGrupos.Count == 0)
+                ListGrupos = await client.GetJsonAsync<List<Grupos>>("Grupos/GetGruposs");
+
+            operacao = enOperacao.Inserir;
+        }
+
+        // Adicionar detalhes
+        protected async Task PersisteCategoria()
+        {
+
+            DisableSave = true;
+            var client = ClientFactory.CreateClient("api");
+            //GrupoAtual = new Grupos();
+
+            //GrupoAtual.DsGrupo = "banaa";
+
+            //Console.Clear();
+            Console.WriteLine($"CategoriaAtual.IdGrupo: {CategoriaAtual.IdCategoria}");
+            if (CategoriaAtual.IdCategoria == 0)
+            {
+
+
+                Console.WriteLine($"CategoriaAtual: post {CategoriaAtual.DsCategoria}");
+
+                //var content = PostContent.PrepareData(GrupoAtual);
+
+                //var data = new { IdCategoria = CategoriaAtual.IdCategoria, DsCategoria = CategoriaAtual.DsCategoria, IdGrupo = CategoriaAtual.IdGrupo };
+
+                //CommandClass command = new CommandClass();
+
+                //command.ControllerName = "Categorias";
+                //command.DataParam = JsonConvert.SerializeObject(CategoriaAtual);
+                //command.Method = "/PostCategorias/";
+                //command.Tipo = "P";
+
+                //string strSend = Program.ToLiteral(JsonConvert.SerializeObject(command));
+
+                //Console.WriteLine($"content: {strSend}");
+
+                //var buffer = System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(command));
+                //var buffer = System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(CategoriaAtual));
+
+                var byteContent = PostContent.PrepareData(CategoriaAtual);
+
+                //byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+
+                // var xcontent = new StringContent(JsonConvert.SerializeObject(data), System.Text.Encoding.UTF8, "application/json");
+                // var xcontent = new StringContent(strSend, System.Text.Encoding.UTF8, "application/json");
+
+
+                var rst = await client.PostAsync("Categorias/PostCategorias/", byteContent);
+                //var rst = await client.PostAsync("Command/ExecCommand/", byteContent);
+
+                //HttpClient httpc = new HttpClient();
+                //httpc.BaseAddress = new Uri(Constants.UrlApi);
+
+
+                //var rst = await httpc.SendAsync(inicializar("Grupos/PostGrupos/", GrupoAtual));
+
+
+                if (rst.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    var apiResponse = rst.Content.ReadAsStringAsync();
+                    CategoriaAtual = JsonConvert.DeserializeObject<Categorias>(apiResponse.Result);
+                }
+            }
+            else
+            {
+                //var data = new { IdCategoria = CategoriaAtual.IdCategoria, DsCategoria = CategoriaAtual.DsCategoria, IdGrupo = CategoriaAtual.IdGrupo };
+                //var xcontent = new StringContent(JsonConvert.SerializeObject(data), System.Text.Encoding.UTF8, "application/json");
+
+
+                var byteContent = PostContent.PrepareData(CategoriaAtual);
+
+                var rst = await client.PutAsync("Categorias/PutCategorias/", byteContent);
+                Console.WriteLine($"CategoriaAtual: put");
+                if (rst.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    var apiResponse = rst.Content.ReadAsStringAsync();
+                    CategoriaAtual = JsonConvert.DeserializeObject<Categorias>(apiResponse.Result);
+                }
+            }
+
+
+            CategoriaGrp cateGrp = new CategoriaGrp();
+
+            if (operacao == enOperacao.Inserir && ListCategoriaGrp.Where(x => x.IdGrupo == CategoriaAtual.IdGrupo).Count() == 0)
+            {
+                cateGrp.IdCategoria = CategoriaAtual.IdCategoria;
+                cateGrp.DsCategoria = CategoriaAtual.DsCategoria;
+                cateGrp.IdGrupo = CategoriaAtual.IdGrupo;
+                cateGrp.DsGrupo = ListGrupos.Where(x => x.IdGrupo == CategoriaAtual.IdGrupo).FirstOrDefault().DsGrupo;
+                ListCategoriaGrp.Add(cateGrp);
+            }
+            else
+            {
+                foreach (var item in ListCategoriaGrp)
+                {
+                    if (item.IdCategoria == CategoriaAtual.IdCategoria)
+                    {
+                        item.DsCategoria = CategoriaAtual.DsCategoria;
+                        break;
+                    }
+                }
+            }
+
+
+            operacao = enOperacao.Detalhe;
+            DisableSave = false;
+            //GrupoAtual = await client.GetJsonAsync<Grupos>($"/api/GetGruposById/id={}");
+        }
+        // Editar
+        protected async Task EditGrupo(int CategoriaID)
+        {
+            var client = ClientFactory.CreateClient("api");
+            CategoriaAtual = await client.GetFromJsonAsync<Categorias>($"{Constants.UrlApi}Categorias/GetCategoriasById/id={CategoriaID}");
+            operacao = enOperacao.Editar;
+            VisDetalhe = false;
+            VisEditar = true;
+            VisBrowse = false;
+        }
+
+
+
+        private void BeforeDialogOpen(Syncfusion.Blazor.Popups.BeforeOpenEventArgs args)
+        {
+
+            this.ShowButtons = false;
+
+        }
+        private void DialogClose(CloseEventArgs args)
+        {
+            this.ShowButtons = true;
+            operacao = enOperacao.Browse;
+        }
+
+        private void HideDialog(Object e)
+        {
+
+            this.ConfirmDlgVisible = false;
+            operacao = enOperacao.Browse;
+        }
+
+        private void HideDialogDelete(Object e)
+        {
+
+            try
+            {
+                var client = ClientFactory.CreateClient("api");
+                //var deleterst = await
+
+                var tdelete = client.DeleteAsync($"Categorias/DeleteCategorias?id={CategoriaAtual.IdCategoria}");
+
+                tdelete.Wait();
+
+                if (tdelete.Result.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    var rmvItem = ListCategoriaGrp.Where(x => x.IdCategoria == CategoriaAtual.IdCategoria).FirstOrDefault();
+                    if (rmvItem != null)
+                        ListCategoriaGrp.Remove(rmvItem);
+                }
+            }
+            catch (Exception exa)
+            {
+                Console.WriteLine(">>>>>>>>>>>>>>>>>>>>>>>>> error: " + exa.Message);
+
+            }
+
+
+            //if (DeleteService.Execute("Categorias", $"id={CategoriaAtual.IdCategoria}", ClientFactory))
+            //{
+            this.ConfirmDlgVisible = false;
+
+            operacao = enOperacao.Browse;
+
+
+            //}
+            //var client = ClientFactory.CreateClient("api");
+            //var rst = client.DeleteAsync($"Categorias/DeleteCategorias?id={CategoriaAtual.IdCategoria}");
+
+        }
+
+
+        }
+        @code{
+            public class CategoriaGrp : Categorias
+            {
+                public string DsGrupo { get; set; }
+            }
+        }
+    </Authorized>
+    <NotAuthorized>
+        <h1>Sem permissão para acessar esse recurso</h1>
+    </NotAuthorized>
+</AuthorizeView>
